@@ -1,0 +1,218 @@
+
+factorial_fibonacci:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <kernel-0x10>:
+   0:	00000013          	addi	zero,zero,0
+   4:	00000013          	addi	zero,zero,0
+   8:	00000013          	addi	zero,zero,0
+   c:	00000013          	addi	zero,zero,0
+
+00000010 <kernel>:
+  10:	00000013          	addi	zero,zero,0
+  14:	00000093          	addi	ra,zero,0
+  18:	60000113          	addi	sp,zero,1536
+  1c:	00000193          	addi	gp,zero,0
+  20:	00000213          	addi	tp,zero,0
+  24:	00000293          	addi	t0,zero,0
+  28:	00000313          	addi	t1,zero,0
+  2c:	00000393          	addi	t2,zero,0
+  30:	00000413          	addi	s0,zero,0
+  34:	00000513          	addi	a0,zero,0
+  38:	00000593          	addi	a1,zero,0
+  3c:	00000613          	addi	a2,zero,0
+  40:	00000993          	addi	s3,zero,0
+  44:	00000713          	addi	a4,zero,0
+  48:	00000793          	addi	a5,zero,0
+  4c:	00000813          	addi	a6,zero,0
+  50:	00000893          	addi	a7,zero,0
+  54:	00000913          	addi	s2,zero,0
+  58:	00000993          	addi	s3,zero,0
+  5c:	00000a13          	addi	s4,zero,0
+  60:	00000a93          	addi	s5,zero,0
+  64:	00000b13          	addi	s6,zero,0
+  68:	00000b93          	addi	s7,zero,0
+  6c:	00000c13          	addi	s8,zero,0
+  70:	00000c93          	addi	s9,zero,0
+  74:	00000d13          	addi	s10,zero,0
+  78:	00000d93          	addi	s11,zero,0
+  7c:	00000e13          	addi	t3,zero,0
+  80:	00000e93          	addi	t4,zero,0
+  84:	00000f13          	addi	t5,zero,0
+  88:	00000f93          	addi	t6,zero,0
+  8c:	00000097          	auipc	ra,0x0
+  90:	208080e7          	jalr	ra,520(ra) # 294 <main>
+  94:	00000013          	addi	zero,zero,0
+  98:	00050493          	addi	s1,a0,0
+  9c:	00000013          	addi	zero,zero,0
+  a0:	00000013          	addi	zero,zero,0
+  a4:	00000013          	addi	zero,zero,0
+  a8:	00000013          	addi	zero,zero,0
+  ac:	00000097          	auipc	ra,0x0
+  b0:	000080e7          	jalr	ra,0(ra) # ac <kernel+0x9c>
+  b4:	00000013          	addi	zero,zero,0
+  b8:	00000013          	addi	zero,zero,0
+  bc:	00000013          	addi	zero,zero,0
+  c0:	00000013          	addi	zero,zero,0
+
+000000c4 <multiply_by_add>:
+  c4:	fd010113          	addi	sp,sp,-48
+  c8:	02812623          	sw	s0,44(sp)
+  cc:	03010413          	addi	s0,sp,48
+  d0:	fca42e23          	sw	a0,-36(s0)
+  d4:	fcb42c23          	sw	a1,-40(s0)
+  d8:	fe042423          	sw	zero,-24(s0)
+  dc:	fe042623          	sw	zero,-20(s0)
+  e0:	0200006f          	jal	zero,100 <multiply_by_add+0x3c>
+  e4:	fe842703          	lw	a4,-24(s0)
+  e8:	fdc42783          	lw	a5,-36(s0)
+  ec:	00f707b3          	add	a5,a4,a5
+  f0:	fef42423          	sw	a5,-24(s0)
+  f4:	fec42783          	lw	a5,-20(s0)
+  f8:	00178793          	addi	a5,a5,1
+  fc:	fef42623          	sw	a5,-20(s0)
+ 100:	fec42703          	lw	a4,-20(s0)
+ 104:	fd842783          	lw	a5,-40(s0)
+ 108:	fcf76ee3          	bltu	a4,a5,e4 <multiply_by_add+0x20>
+ 10c:	fe842783          	lw	a5,-24(s0)
+ 110:	00078513          	addi	a0,a5,0
+ 114:	02c12403          	lw	s0,44(sp)
+ 118:	03010113          	addi	sp,sp,48
+ 11c:	00008067          	jalr	zero,0(ra)
+
+00000120 <factorial>:
+ 120:	fe010113          	addi	sp,sp,-32
+ 124:	00112e23          	sw	ra,28(sp)
+ 128:	00812c23          	sw	s0,24(sp)
+ 12c:	02010413          	addi	s0,sp,32
+ 130:	fea42623          	sw	a0,-20(s0)
+ 134:	fec42783          	lw	a5,-20(s0)
+ 138:	00079663          	bne	a5,zero,144 <factorial+0x24>
+ 13c:	00000793          	addi	a5,zero,0
+ 140:	0480006f          	jal	zero,188 <factorial+0x68>
+ 144:	fec42703          	lw	a4,-20(s0)
+ 148:	00100793          	addi	a5,zero,1
+ 14c:	00f71663          	bne	a4,a5,158 <factorial+0x38>
+ 150:	00100793          	addi	a5,zero,1
+ 154:	0340006f          	jal	zero,188 <factorial+0x68>
+ 158:	fec42783          	lw	a5,-20(s0)
+ 15c:	fff78793          	addi	a5,a5,-1
+ 160:	00078513          	addi	a0,a5,0
+ 164:	00000097          	auipc	ra,0x0
+ 168:	fbc080e7          	jalr	ra,-68(ra) # 120 <factorial>
+ 16c:	00050793          	addi	a5,a0,0
+ 170:	00078593          	addi	a1,a5,0
+ 174:	fec42503          	lw	a0,-20(s0)
+ 178:	00000097          	auipc	ra,0x0
+ 17c:	f4c080e7          	jalr	ra,-180(ra) # c4 <multiply_by_add>
+ 180:	fea42623          	sw	a0,-20(s0)
+ 184:	fec42783          	lw	a5,-20(s0)
+ 188:	00078513          	addi	a0,a5,0
+ 18c:	01c12083          	lw	ra,28(sp)
+ 190:	01812403          	lw	s0,24(sp)
+ 194:	02010113          	addi	sp,sp,32
+ 198:	00008067          	jalr	zero,0(ra)
+
+0000019c <fib>:
+ 19c:	fe010113          	addi	sp,sp,-32
+ 1a0:	00112e23          	sw	ra,28(sp)
+ 1a4:	00812c23          	sw	s0,24(sp)
+ 1a8:	00912a23          	sw	s1,20(sp)
+ 1ac:	02010413          	addi	s0,sp,32
+ 1b0:	fea42623          	sw	a0,-20(s0)
+ 1b4:	fec42703          	lw	a4,-20(s0)
+ 1b8:	00100793          	addi	a5,zero,1
+ 1bc:	00e7c663          	blt	a5,a4,1c8 <fib+0x2c>
+ 1c0:	fec42783          	lw	a5,-20(s0)
+ 1c4:	0380006f          	jal	zero,1fc <fib+0x60>
+ 1c8:	fec42783          	lw	a5,-20(s0)
+ 1cc:	fff78793          	addi	a5,a5,-1
+ 1d0:	00078513          	addi	a0,a5,0
+ 1d4:	00000097          	auipc	ra,0x0
+ 1d8:	fc8080e7          	jalr	ra,-56(ra) # 19c <fib>
+ 1dc:	00050493          	addi	s1,a0,0
+ 1e0:	fec42783          	lw	a5,-20(s0)
+ 1e4:	ffe78793          	addi	a5,a5,-2
+ 1e8:	00078513          	addi	a0,a5,0
+ 1ec:	00000097          	auipc	ra,0x0
+ 1f0:	fb0080e7          	jalr	ra,-80(ra) # 19c <fib>
+ 1f4:	00050793          	addi	a5,a0,0
+ 1f8:	00f487b3          	add	a5,s1,a5
+ 1fc:	00078513          	addi	a0,a5,0
+ 200:	01c12083          	lw	ra,28(sp)
+ 204:	01812403          	lw	s0,24(sp)
+ 208:	01412483          	lw	s1,20(sp)
+ 20c:	02010113          	addi	sp,sp,32
+ 210:	00008067          	jalr	zero,0(ra)
+
+00000214 <hThread1>:
+ 214:	fd010113          	addi	sp,sp,-48
+ 218:	02112623          	sw	ra,44(sp)
+ 21c:	02812423          	sw	s0,40(sp)
+ 220:	03010413          	addi	s0,sp,48
+ 224:	fca42e23          	sw	a0,-36(s0)
+ 228:	fdc42503          	lw	a0,-36(s0)
+ 22c:	00000097          	auipc	ra,0x0
+ 230:	f70080e7          	jalr	ra,-144(ra) # 19c <fib>
+ 234:	fea42623          	sw	a0,-20(s0)
+ 238:	fec42783          	lw	a5,-20(s0)
+ 23c:	00078513          	addi	a0,a5,0
+ 240:	02c12083          	lw	ra,44(sp)
+ 244:	02812403          	lw	s0,40(sp)
+ 248:	03010113          	addi	sp,sp,48
+ 24c:	00008067          	jalr	zero,0(ra)
+
+00000250 <hThread2>:
+ 250:	fd010113          	addi	sp,sp,-48
+ 254:	02112623          	sw	ra,44(sp)
+ 258:	02812423          	sw	s0,40(sp)
+ 25c:	03010413          	addi	s0,sp,48
+ 260:	fca42e23          	sw	a0,-36(s0)
+ 264:	fdc42783          	lw	a5,-36(s0)
+ 268:	00078513          	addi	a0,a5,0
+ 26c:	00000097          	auipc	ra,0x0
+ 270:	eb4080e7          	jalr	ra,-332(ra) # 120 <factorial>
+ 274:	00050793          	addi	a5,a0,0
+ 278:	fef42623          	sw	a5,-20(s0)
+ 27c:	fec42783          	lw	a5,-20(s0)
+ 280:	00078513          	addi	a0,a5,0
+ 284:	02c12083          	lw	ra,44(sp)
+ 288:	02812403          	lw	s0,40(sp)
+ 28c:	03010113          	addi	sp,sp,48
+ 290:	00008067          	jalr	zero,0(ra)
+
+00000294 <main>:
+ 294:	fe010113          	addi	sp,sp,-32
+ 298:	00112e23          	sw	ra,28(sp)
+ 29c:	00812c23          	sw	s0,24(sp)
+ 2a0:	02010413          	addi	s0,sp,32
+ 2a4:	00c00793          	addi	a5,zero,12
+ 2a8:	fef42623          	sw	a5,-20(s0)
+ 2ac:	00800793          	addi	a5,zero,8
+ 2b0:	fef42423          	sw	a5,-24(s0)
+ 2b4:	fec42503          	lw	a0,-20(s0)
+ 2b8:	00000097          	auipc	ra,0x0
+ 2bc:	f5c080e7          	jalr	ra,-164(ra) # 214 <hThread1>
+ 2c0:	fea42223          	sw	a0,-28(s0)
+ 2c4:	fe842503          	lw	a0,-24(s0)
+ 2c8:	00000097          	auipc	ra,0x0
+ 2cc:	f88080e7          	jalr	ra,-120(ra) # 250 <hThread2>
+ 2d0:	fea42023          	sw	a0,-32(s0)
+ 2d4:	00000793          	addi	a5,zero,0
+ 2d8:	00078513          	addi	a0,a5,0
+ 2dc:	01c12083          	lw	ra,28(sp)
+ 2e0:	01812403          	lw	s0,24(sp)
+ 2e4:	02010113          	addi	sp,sp,32
+ 2e8:	00008067          	jalr	zero,0(ra)
+ 2ec:	00000013          	addi	zero,zero,0
+ 2f0:	00000013          	addi	zero,zero,0
+ 2f4:	00000013          	addi	zero,zero,0
+ 2f8:	00000013          	addi	zero,zero,0
+ 2fc:	00000097          	auipc	ra,0x0
+ 300:	000080e7          	jalr	ra,0(ra) # 2fc <main+0x68>
+ 304:	00000013          	addi	zero,zero,0
+ 308:	00000013          	addi	zero,zero,0
+ 30c:	00000013          	addi	zero,zero,0
+ 310:	00000013          	addi	zero,zero,0

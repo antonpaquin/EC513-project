@@ -1,0 +1,152 @@
+
+hanoi:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <kernel-0x10>:
+   0:	00000013          	addi	zero,zero,0
+   4:	00000013          	addi	zero,zero,0
+   8:	00000013          	addi	zero,zero,0
+   c:	00000013          	addi	zero,zero,0
+
+00000010 <kernel>:
+  10:	00000013          	addi	zero,zero,0
+  14:	00000093          	addi	ra,zero,0
+  18:	60000113          	addi	sp,zero,1536
+  1c:	00000193          	addi	gp,zero,0
+  20:	00000213          	addi	tp,zero,0
+  24:	00000293          	addi	t0,zero,0
+  28:	00000313          	addi	t1,zero,0
+  2c:	00000393          	addi	t2,zero,0
+  30:	00000413          	addi	s0,zero,0
+  34:	00000513          	addi	a0,zero,0
+  38:	00000593          	addi	a1,zero,0
+  3c:	00000613          	addi	a2,zero,0
+  40:	00000993          	addi	s3,zero,0
+  44:	00000713          	addi	a4,zero,0
+  48:	00000793          	addi	a5,zero,0
+  4c:	00000813          	addi	a6,zero,0
+  50:	00000893          	addi	a7,zero,0
+  54:	00000913          	addi	s2,zero,0
+  58:	00000993          	addi	s3,zero,0
+  5c:	00000a13          	addi	s4,zero,0
+  60:	00000a93          	addi	s5,zero,0
+  64:	00000b13          	addi	s6,zero,0
+  68:	00000b93          	addi	s7,zero,0
+  6c:	00000c13          	addi	s8,zero,0
+  70:	00000c93          	addi	s9,zero,0
+  74:	00000d13          	addi	s10,zero,0
+  78:	00000d93          	addi	s11,zero,0
+  7c:	00000e13          	addi	t3,zero,0
+  80:	00000e93          	addi	t4,zero,0
+  84:	00000f13          	addi	t5,zero,0
+  88:	00000f93          	addi	t6,zero,0
+  8c:	00000097          	auipc	ra,0x0
+  90:	114080e7          	jalr	ra,276(ra) # 1a0 <main>
+  94:	00000013          	addi	zero,zero,0
+  98:	00050493          	addi	s1,a0,0
+  9c:	00000013          	addi	zero,zero,0
+  a0:	00000013          	addi	zero,zero,0
+  a4:	00000013          	addi	zero,zero,0
+  a8:	00000013          	addi	zero,zero,0
+  ac:	00000097          	auipc	ra,0x0
+  b0:	000080e7          	jalr	ra,0(ra) # ac <kernel+0x9c>
+  b4:	00000013          	addi	zero,zero,0
+  b8:	00000013          	addi	zero,zero,0
+  bc:	00000013          	addi	zero,zero,0
+  c0:	00000013          	addi	zero,zero,0
+
+000000c4 <Hanoi>:
+  c4:	fd010113          	addi	sp,sp,-48
+  c8:	02112623          	sw	ra,44(sp)
+  cc:	02812423          	sw	s0,40(sp)
+  d0:	03010413          	addi	s0,sp,48
+  d4:	fca42e23          	sw	a0,-36(s0)
+  d8:	fcb42c23          	sw	a1,-40(s0)
+  dc:	fcc42a23          	sw	a2,-44(s0)
+  e0:	fcd42823          	sw	a3,-48(s0)
+  e4:	fe042623          	sw	zero,-20(s0)
+  e8:	fdc42703          	lw	a4,-36(s0)
+  ec:	00100793          	addi	a5,zero,1
+  f0:	00f71863          	bne	a4,a5,100 <Hanoi+0x3c>
+  f4:	00100793          	addi	a5,zero,1
+  f8:	fef42623          	sw	a5,-20(s0)
+  fc:	08c0006f          	jal	zero,188 <Hanoi+0xc4>
+ 100:	fdc42783          	lw	a5,-36(s0)
+ 104:	fff78793          	addi	a5,a5,-1
+ 108:	fd442683          	lw	a3,-44(s0)
+ 10c:	fd042603          	lw	a2,-48(s0)
+ 110:	fd842583          	lw	a1,-40(s0)
+ 114:	00078513          	addi	a0,a5,0
+ 118:	00000097          	auipc	ra,0x0
+ 11c:	fac080e7          	jalr	ra,-84(ra) # c4 <Hanoi>
+ 120:	00050713          	addi	a4,a0,0
+ 124:	fec42783          	lw	a5,-20(s0)
+ 128:	00e787b3          	add	a5,a5,a4
+ 12c:	fef42623          	sw	a5,-20(s0)
+ 130:	fd042683          	lw	a3,-48(s0)
+ 134:	fd442603          	lw	a2,-44(s0)
+ 138:	fd842583          	lw	a1,-40(s0)
+ 13c:	00100513          	addi	a0,zero,1
+ 140:	00000097          	auipc	ra,0x0
+ 144:	f84080e7          	jalr	ra,-124(ra) # c4 <Hanoi>
+ 148:	00050713          	addi	a4,a0,0
+ 14c:	fec42783          	lw	a5,-20(s0)
+ 150:	00e787b3          	add	a5,a5,a4
+ 154:	fef42623          	sw	a5,-20(s0)
+ 158:	fdc42783          	lw	a5,-36(s0)
+ 15c:	fff78793          	addi	a5,a5,-1
+ 160:	fd042683          	lw	a3,-48(s0)
+ 164:	fd842603          	lw	a2,-40(s0)
+ 168:	fd442583          	lw	a1,-44(s0)
+ 16c:	00078513          	addi	a0,a5,0
+ 170:	00000097          	auipc	ra,0x0
+ 174:	f54080e7          	jalr	ra,-172(ra) # c4 <Hanoi>
+ 178:	00050713          	addi	a4,a0,0
+ 17c:	fec42783          	lw	a5,-20(s0)
+ 180:	00e787b3          	add	a5,a5,a4
+ 184:	fef42623          	sw	a5,-20(s0)
+ 188:	fec42783          	lw	a5,-20(s0)
+ 18c:	00078513          	addi	a0,a5,0
+ 190:	02c12083          	lw	ra,44(sp)
+ 194:	02812403          	lw	s0,40(sp)
+ 198:	03010113          	addi	sp,sp,48
+ 19c:	00008067          	jalr	zero,0(ra)
+
+000001a0 <main>:
+ 1a0:	fd010113          	addi	sp,sp,-48
+ 1a4:	02112623          	sw	ra,44(sp)
+ 1a8:	02812423          	sw	s0,40(sp)
+ 1ac:	03010413          	addi	s0,sp,48
+ 1b0:	00100793          	addi	a5,zero,1
+ 1b4:	fef42623          	sw	a5,-20(s0)
+ 1b8:	00200793          	addi	a5,zero,2
+ 1bc:	fef42423          	sw	a5,-24(s0)
+ 1c0:	00300793          	addi	a5,zero,3
+ 1c4:	fef42223          	sw	a5,-28(s0)
+ 1c8:	00400793          	addi	a5,zero,4
+ 1cc:	fef42023          	sw	a5,-32(s0)
+ 1d0:	fe442683          	lw	a3,-28(s0)
+ 1d4:	fe842603          	lw	a2,-24(s0)
+ 1d8:	fec42583          	lw	a1,-20(s0)
+ 1dc:	fe042503          	lw	a0,-32(s0)
+ 1e0:	00000097          	auipc	ra,0x0
+ 1e4:	ee4080e7          	jalr	ra,-284(ra) # c4 <Hanoi>
+ 1e8:	fca42e23          	sw	a0,-36(s0)
+ 1ec:	fdc42783          	lw	a5,-36(s0)
+ 1f0:	00078513          	addi	a0,a5,0
+ 1f4:	02c12083          	lw	ra,44(sp)
+ 1f8:	02812403          	lw	s0,40(sp)
+ 1fc:	03010113          	addi	sp,sp,48
+ 200:	00008067          	jalr	zero,0(ra)
+ 204:	00000013          	addi	zero,zero,0
+ 208:	00000013          	addi	zero,zero,0
+ 20c:	00000013          	addi	zero,zero,0
+ 210:	00000013          	addi	zero,zero,0
+ 214:	00000097          	auipc	ra,0x0
+ 218:	000080e7          	jalr	ra,0(ra) # 214 <main+0x74>
+ 21c:	00000013          	addi	zero,zero,0
+ 220:	00000013          	addi	zero,zero,0
+ 224:	00000013          	addi	zero,zero,0
+ 228:	00000013          	addi	zero,zero,0
