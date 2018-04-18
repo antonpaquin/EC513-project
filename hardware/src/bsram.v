@@ -55,7 +55,7 @@ assign readData = (readEnable & writeEnable & (readAddress == writeAddress))?
                   writeData : readEnable? sram[readAddress] : 0;
 
 initial begin
-    $readmemh("program.vmh", sram);
+    $readmemh("program.mem", sram);
 end
 
 always@(posedge clock) begin : RAM_WRITE
