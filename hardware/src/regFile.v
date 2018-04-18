@@ -35,7 +35,7 @@ output[REG_DATA_WIDTH-1:0] read_data2;
 
 (* ram_style = "distributed" *) 
 reg   [REG_DATA_WIDTH-1:0] register_file[0:(1<<REG_SEL_BITS)-1];
-integer i; 
+integer i;
 
 always @(posedge clock)
     if(reset==1)
