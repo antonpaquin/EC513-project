@@ -91,9 +91,9 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 ///////////////////////////////////// WRITES /////////////////////////////////////
 
 	// write through all levels of memory whenever write requested or read miss
-	assign l1d_write_en = write_en || ~l1d_hit;
-	assign l2_write_en = write_en || ~l2_hit;
-	assign mm_write_en = write_en;
+	assign l1d_write_en = (~rst) && (write_en || ~l1d_hit);
+	assign l2_write_en = (~rst) && (write_en || ~l2_hit);
+	assign mm_write_en = (~rst) && (write_en);
 
 	// in write req, write the input data. in read miss, write data from lower level of memory
 	assign l1d_write_data = ~l1d_hit ? ( ~l2_hit ? mm_read_data : l2_read_data)

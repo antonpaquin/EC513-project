@@ -27,7 +27,8 @@ module tb_CacheModel;
 	initial begin
 
 		$dumpfile("CacheModel.vcd");
-		$dumpvars(0, uut, uut.l1dcache.cachemem[0][0], uut.l1dcache.cachemem[0][1]);
+		$dumpvars(0, uut, uut.l1dcache.cachemem[0][0], uut.l1dcache.cachemem[0][1],
+							uut.l1dcache.tags[0], uut.l1dcache.tags[1]);
 
 		clk = 1;
 		rst = 1;
@@ -37,8 +38,8 @@ module tb_CacheModel;
 		write_data = 32'habcdef;
 
 		#10 rst = 0;
-		
-		#4 write_en = 1;
+
+		#10 write_en = 1;
 
 		#10;
 		$finish;

@@ -1,5 +1,5 @@
 $date
-	Thu Apr 19 00:38:36 2018
+	Thu Apr 19 13:31:56 2018
 $end
 $version
 	Icarus Verilog
@@ -12,71 +12,75 @@ $scope module uut $end
 $var wire 8 ! address [7:0] $end
 $var wire 1 " clk $end
 $var wire 1 # l1d_write_en $end
-$var wire 1 $ l2_write_en $end
-$var wire 1 % mm_read_en $end
-$var wire 1 & mm_write_en $end
-$var wire 1 ' report $end
-$var wire 1 ( rst $end
-$var wire 32 ) write_data [31:0] $end
-$var wire 1 * write_en $end
-$var wire 32 + read_data [31:0] $end
-$var wire 32 , mm_read_data [31:0] $end
-$var wire 32 - l2_read_data [31:0] $end
-$var wire 1 . l2_hit $end
-$var wire 32 / l1i_read_data [31:0] $end
-$var wire 1 0 l1i_hit $end
-$var wire 32 1 l1d_read_data [31:0] $end
-$var wire 1 2 l1d_hit $end
+$var wire 32 $ l1i_write_data [31:0] $end
+$var wire 1 % l1i_write_en $end
+$var wire 1 & l2_write_en $end
+$var wire 1 ' mm_read_en $end
+$var wire 1 ( mm_write_en $end
+$var wire 1 ) report $end
+$var wire 1 * rst $end
+$var wire 32 + write_data [31:0] $end
+$var wire 1 , write_en $end
+$var wire 32 - read_data [31:0] $end
+$var wire 32 . mm_read_data [31:0] $end
+$var wire 32 / l2_write_data [31:0] $end
+$var wire 32 0 l2_read_data [31:0] $end
+$var wire 1 1 l2_hit $end
+$var wire 32 2 l1i_read_data [31:0] $end
+$var wire 1 3 l1i_hit $end
+$var wire 32 4 l1d_write_data [31:0] $end
+$var wire 32 5 l1d_read_data [31:0] $end
+$var wire 1 6 l1d_hit $end
 $scope module l1dcache $end
-$var wire 8 3 address [7:0] $end
+$var wire 8 7 address [7:0] $end
 $var wire 1 " clk $end
-$var wire 1 2 hit $end
-$var wire 32 4 read_data [31:0] $end
-$var wire 1 ( rst $end
-$var wire 32 5 write_data [31:0] $end
-$var wire 1 * write_en $end
-$var wire 29 6 tag [28:0] $end
-$var wire 2 7 index [1:0] $end
-$var wire 1 8 block_offset $end
-$var reg 4 9 valid [0:3] $end
+$var wire 1 6 hit $end
+$var wire 32 8 read_data [31:0] $end
+$var wire 1 * rst $end
+$var wire 32 9 write_data [31:0] $end
+$var wire 1 # write_en $end
+$var wire 5 : tag [4:0] $end
+$var wire 2 ; index [1:0] $end
+$var wire 1 < block_offset $end
+$var reg 4 = valid [3:0] $end
 $upscope $end
 $scope module l1icache $end
-$var wire 8 : address [7:0] $end
+$var wire 8 > address [7:0] $end
 $var wire 1 " clk $end
-$var wire 1 0 hit $end
-$var wire 32 ; read_data [31:0] $end
-$var wire 1 ( rst $end
-$var wire 32 < write_data [31:0] $end
-$var wire 1 * write_en $end
-$var wire 29 = tag [28:0] $end
-$var wire 2 > index [1:0] $end
-$var wire 1 ? block_offset $end
-$var reg 4 @ valid [0:3] $end
+$var wire 1 3 hit $end
+$var wire 32 ? read_data [31:0] $end
+$var wire 1 * rst $end
+$var wire 32 @ write_data [31:0] $end
+$var wire 1 % write_en $end
+$var wire 5 A tag [4:0] $end
+$var wire 2 B index [1:0] $end
+$var wire 1 C block_offset $end
+$var reg 4 D valid [3:0] $end
 $upscope $end
 $scope module l2cache $end
-$var wire 8 A address [7:0] $end
+$var wire 8 E address [7:0] $end
 $var wire 1 " clk $end
-$var wire 1 . hit $end
-$var wire 32 B read_data [31:0] $end
-$var wire 1 ( rst $end
-$var wire 32 C write_data [31:0] $end
-$var wire 1 * write_en $end
-$var wire 29 D tag [28:0] $end
-$var wire 2 E index [1:0] $end
-$var wire 1 F block_offset $end
-$var reg 4 G valid [0:3] $end
+$var wire 1 1 hit $end
+$var wire 32 F read_data [31:0] $end
+$var wire 1 * rst $end
+$var wire 32 G write_data [31:0] $end
+$var wire 1 & write_en $end
+$var wire 5 H tag [4:0] $end
+$var wire 2 I index [1:0] $end
+$var wire 1 J block_offset $end
+$var reg 4 K valid [3:0] $end
 $upscope $end
 $scope module main_memory $end
 $var wire 1 " clock $end
-$var wire 8 H readAddress [7:0] $end
-$var wire 1 % readEnable $end
-$var wire 1 ' report $end
-$var wire 1 ( reset $end
-$var wire 8 I writeAddress [7:0] $end
-$var wire 32 J writeData [31:0] $end
-$var wire 1 * writeEnable $end
-$var wire 32 K readData [31:0] $end
-$var reg 32 L cycles [31:0] $end
+$var wire 8 L readAddress [7:0] $end
+$var wire 1 ' readEnable $end
+$var wire 1 ) report $end
+$var wire 1 * reset $end
+$var wire 8 M writeAddress [7:0] $end
+$var wire 32 N writeData [31:0] $end
+$var wire 1 , writeEnable $end
+$var wire 32 O readData [31:0] $end
+$var reg 32 P cycles [31:0] $end
 $scope begin RAM_WRITE $end
 $upscope $end
 $upscope $end
@@ -85,63 +89,83 @@ $upscope $end
 $scope module tb_CacheModel $end
 $scope module uut $end
 $scope module l1dcache $end
-$var reg 32 M \cachemem[0] [31:0] $end
+$var reg 32 Q \cachemem[0] [31:0] $end
 $upscope $end
 $upscope $end
 $upscope $end
 $scope module tb_CacheModel $end
 $scope module uut $end
 $scope module l1dcache $end
-$var reg 32 N \cachemem[1] [31:0] $end
+$var reg 32 R \cachemem[1] [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l1dcache $end
+$var reg 5 S \tags[0] [4:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l1dcache $end
+$var reg 5 T \tags[1] [4:0] $end
 $upscope $end
 $upscope $end
 $upscope $end
 $enddefinitions $end
 #0
 $dumpvars
-bx N
-bx M
-b0 L
-b111010010011 K
-b101010111100110111101111 J
-b100000 I
-b100000 H
-b0 G
-0F
-b0 E
-b100000xxxxxxxxxxxxxxxxxxxxx D
-b101010111100110111101111 C
-bx B
-b100000 A
-b0 @
-0?
-b0 >
-b100000xxxxxxxxxxxxxxxxxxxxx =
-b101010111100110111101111 <
-bx ;
-b100000 :
-b0 9
-08
-b0 7
-b100000xxxxxxxxxxxxxxxxxxxxx 6
-b101010111100110111101111 5
-bx 4
-b100000 3
-02
-bx 1
-00
-bx /
-0.
-bx -
-b111010010011 ,
-b111010010011 +
-0*
-b101010111100110111101111 )
-1(
-0'
+bx T
+bx S
+bx R
+bx Q
+b0 P
+b111010010011 O
+b101010111100110111101111 N
+b100000 M
+b100000 L
+b0 K
+0J
+b0 I
+b100 H
+b111010010011 G
+bx F
+b100000 E
+b0 D
+0C
+b0 B
+b100 A
+bz @
+bx ?
+b100000 >
+b0 =
+0<
+b0 ;
+b100 :
+b111010010011 9
+bx 8
+b100000 7
+06
+bx 5
+b111010010011 4
+03
+bx 2
+01
+bx 0
+b111010010011 /
+b111010010011 .
+b111010010011 -
+0,
+b101010111100110111101111 +
+1*
+0)
+0(
+1'
 0&
-1%
-0$
+z%
+bz $
 0#
 1"
 b100000 !
@@ -165,38 +189,95 @@ $end
 #9
 0"
 #10
-x.
-x2
-x0
-b1 L
-b1000 G
-b1000 9
-b1000 @
-b101010111100110111101111 +
-b101010111100110111101111 ,
-b101010111100110111101111 K
-b101010111100110111101111 -
-b101010111100110111101111 B
-b101010111100110111101111 M
-b101010111100110111101111 1
-b101010111100110111101111 4
-b101010111100110111101111 /
-b101010111100110111101111 ;
-1"
+b1 P
 1#
-1$
 1&
-1*
-0(
+1"
+0*
 #11
 0"
 #12
-b10 L
-b101010111100110111101111 M
+0#
+0&
+b101010111100110111101111 4
+b101010111100110111101111 9
+b101010111100110111101111 /
+b101010111100110111101111 G
+16
+11
+b1 =
+b100 S
+b111010010011 Q
+b111010010011 5
+b111010010011 8
+b1 K
+b111010010011 0
+b111010010011 F
+b10 P
 1"
 #13
 0"
 #14
-b11 L
-b101010111100110111101111 M
+b11 P
+1"
+#15
+0"
+#16
+b100 P
+1"
+#17
+0"
+#18
+b101 P
+1"
+#19
+0"
+#20
+b110 P
+b101010111100110111101111 .
+b101010111100110111101111 O
+1#
+1&
+1(
+1"
+1,
+#21
+0"
+#22
+b101010111100110111101111 -
+b111 P
+b101010111100110111101111 0
+b101010111100110111101111 F
+b100 S
+b101010111100110111101111 Q
+b101010111100110111101111 5
+b101010111100110111101111 8
+1"
+#23
+0"
+#24
+b100 S
+b101010111100110111101111 Q
+b1000 P
+1"
+#25
+0"
+#26
+b1001 P
+b100 S
+b101010111100110111101111 Q
+1"
+#27
+0"
+#28
+b100 S
+b101010111100110111101111 Q
+b1010 P
+1"
+#29
+0"
+#30
+b1011 P
+b100 S
+b101010111100110111101111 Q
 1"

@@ -16,7 +16,7 @@ module Cache #(
 	input 						write_en,
 	input 	[DATA_WIDTH-1:0]	write_data,
 	input 	[ADDR_WIDTH-1:0] 	address,
-	output	reg					hit,
+	output						hit,
 	output	[DATA_WIDTH-1:0]	read_data
 );
 
@@ -39,7 +39,12 @@ module Cache #(
 	wire [LOG_NUM_LINES-1:0] index = address[LOG_NUM_LINES+LOG_NUM_BLOCKS-1:LOG_NUM_BLOCKS];
 
 	// asynchronous read
+	assign hit = valid[index] && tags[index]==tag;
 	assign read_data = cachemem[index][block_offset];
+
+	// wire isvalid = valid[index];
+	// wire istag = tags[index]==tag;
+	// wire ishit = isvalid & istag;
 
 	integer i;
 	always @ (posedge clk) begin
@@ -50,9 +55,6 @@ module Cache #(
 
 		else begin
 
-			// does this cache have the requested data
-			hit <= valid[index] && tags[index]==tag;
-
 			if (write_en) begin
 
 				cachemem[index][block_offset] <= write_data;
@@ -60,6 +62,8 @@ module Cache #(
 				valid[index] <= 1'b1;
 
 			end // if (write_en)
+	
+			// hit <= valid[index] && tags[index]==tag;
 		
 		end // else
 
