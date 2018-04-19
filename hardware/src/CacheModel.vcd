@@ -1,5 +1,5 @@
 $date
-	Thu Apr 19 00:20:12 2018
+	Thu Apr 19 00:27:19 2018
 $end
 $version
 	Icarus Verilog
@@ -82,43 +82,59 @@ $upscope $end
 $upscope $end
 $upscope $end
 $upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l1dcache $end
+$var reg 32 M \cachemem[0] [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l1dcache $end
+$var reg 32 N \cachemem[1] [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
 $enddefinitions $end
 #0
 $dumpvars
+bx N
+bx M
 b0 L
-b10011 K
+b111010010011 K
 b101010111100110111101111 J
-b10 I
-b10 H
+b100000 I
+b100000 H
 b100 G
 0F
-b1 E
-b10xxxxxxxxxxxxxxxxxxxxx D
+b0 E
+b100000xxxxxxxxxxxxxxxxxxxxx D
 b101010111100110111101111 C
 bx B
-b10 A
+b100000 A
 b100 @
 0?
-b1 >
-b10xxxxxxxxxxxxxxxxxxxxx =
+b0 >
+b100000xxxxxxxxxxxxxxxxxxxxx =
 b101010111100110111101111 <
 bx ;
-b10 :
+b100000 :
 b100 9
 08
-b1 7
-b10xxxxxxxxxxxxxxxxxxxxx 6
+b0 7
+b100000xxxxxxxxxxxxxxxxxxxxx 6
 b101010111100110111101111 5
 bx 4
-b10 3
+b100000 3
 02
 bx 1
 00
 bx /
 0.
 bx -
-b10011 ,
-b10011 +
+b111010010011 ,
+b111010010011 +
 0*
 b101010111100110111101111 )
 1(
@@ -128,7 +144,7 @@ b101010111100110111101111 )
 0$
 0#
 1"
-b10 !
+b100000 !
 $end
 #1
 0"
@@ -170,6 +186,7 @@ b101010111100110111101111 ,
 b101010111100110111101111 K
 b101010111100110111101111 -
 b101010111100110111101111 B
+b101010111100110111101111 M
 b101010111100110111101111 1
 b101010111100110111101111 4
 b101010111100110111101111 /
@@ -184,9 +201,11 @@ b101010111100110111101111 ;
 0"
 #12
 b10 L
+b101010111100110111101111 M
 1"
 #13
 0"
 #14
 b11 L
+b101010111100110111101111 M
 1"

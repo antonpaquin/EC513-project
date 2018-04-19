@@ -27,13 +27,13 @@ module tb_CacheModel;
 	initial begin
 
 		$dumpfile("CacheModel.vcd");
-		$dumpvars(0, uut);
+		$dumpvars(0, uut, uut.l1dcache.cachemem[0][0], uut.l1dcache.cachemem[0][1]);
 
 		clk = 1;
 		rst = 1;
 		report = 0;
 		write_en = 0;
-		address = 8'b10;
+		address = 8'h20;
 		write_data = 32'habcdef;
 
 		#10 rst = 0;
