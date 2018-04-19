@@ -25,7 +25,7 @@ module Cache #(
 	localparam NUM_BLOCKS = 2**LOG_NUM_BLOCKS;
 
 	// valid bits of all data in cache
-	reg valid[0:NUM_LINES-1];
+	reg [NUM_LINES-1:0] valid;
 	
 	// tags of all data in cache
 	reg [NUM_TAG_BITS-1:0] tags[0:NUM_LINES-1];
@@ -48,11 +48,7 @@ module Cache #(
 	always @ (posedge clk) begin
 
 		if (rst) begin
-
-			for (i = 0; i < NUM_LINES; i=i+1) begin
-				valid[i] <= 1'b0;
-			end
-		
+			valid <= 0;
 		end // if (rst)
 
 		else if (write_en) begin
