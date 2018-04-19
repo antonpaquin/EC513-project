@@ -37,24 +37,27 @@ module tb_CacheModel;
 		rst = 1;
 		report = 0;
 		write_en = 0;
-		address = 8'h20;
 		write_data = 32'habcdef;
 
 		#10 rst = 0;
-		// first 2s - miss (cold)
+		// first 2s - all miss (cold)
 		// next 2s - all hit (same addr)
+		address = 8'h20;
 		
+		// next 2s - all miss
+		// next 2s - all hit (same addr)
+		#4 address = 8'h28;
+
 		// next 2s - l1 miss, l2 hit
 		// next 2s - all hit (same addr)
-		#4 address = 8'h18;
+		#4 address = 8'h20;
 
-		// missed in both l1 and l2
-		// next 2s - all miss (new addr, same cache location)
-		// next 2s - all hit (same addr)
-		#4 address = 8'h30;
-
-		// write through all
+		// write through all because write hit
 		#10 write_en = 1;
+
+		// write only in l2 because it hit. no write on l1 (because miss)
+		#4 write_data = 32'h12345;
+		address = 8'h28;
 
 		#10;
 		$finish;

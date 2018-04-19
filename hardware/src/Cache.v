@@ -13,6 +13,7 @@ module Cache #(
 	parameter ADDR_WIDTH = 8)(
 	input 						clk,
 	input 						rst,
+	input 						update,
 	input 						write_en,
 	input 	[DATA_WIDTH-1:0]	write_data,
 	input 	[ADDR_WIDTH-1:0] 	address,
@@ -42,11 +43,6 @@ module Cache #(
 	assign hit = valid[index] && tags[index]==tag;
 	assign read_data = cachemem[index][block_offset];
 
-	// wire isvalid = valid[index];
-	// wire istag = tags[index]==tag;
-	// wire ishit = isvalid & istag;
-
-	integer i;
 	always @ (posedge clk) begin
 
 		if (rst) begin
@@ -55,16 +51,26 @@ module Cache #(
 
 		else begin
 
-			if (write_en) begin
+			if (update) begin
 
 				cachemem[index][block_offset] <= write_data;
 				tags[index] <= tag;
 				valid[index] <= 1'b1;
+			
+			end // if (update)
+
+			// write in cache only if it is a hit
+			else if (write_en) begin
+
+				if(valid[index] && tags[index]==tag)
+				begin
+					cachemem[index][block_offset] <= write_data;
+					tags[index] <= tag;
+					valid[index] <= 1'b1;
+				end
 
 			end // if (write_en)
 	
-			// hit <= valid[index] && tags[index]==tag;
-		
 		end // else
 
 	end // always @ (posedge clk)
