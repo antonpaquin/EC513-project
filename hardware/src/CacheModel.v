@@ -19,18 +19,15 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 
 ///////////////////////////////////// L1 CACHE /////////////////////////////////////
 	
-	wire 					l1i_hit, l1d_hit;
-	reg 					l1i_write_en, l1d_write_en;
-	reg	[ADDR_WIDTH-1:0]	l1i_address, l1d_address;
-	reg	[DATA_WIDTH-1:0]	l1i_write_data, l1d_write_data;
-	reg	[DATA_WIDTH-1:0]	l1i_read_data, l1d_read_data;
+	wire 						l1i_hit, l1d_hit;
+	wire 	[DATA_WIDTH-1:0]	l1i_read_data, l1d_read_data;
 
 	Cache l1icache (
 		.clk       (clk),
 		.rst       (rst),
-		.write_en  (l1i_write_en),
-		.write_data(l1i_write_data),
-		.address   (l1i_address),
+		.write_en  (write_en),
+		.write_data(write_data),
+		.address   (address),
 		.hit       (l1i_hit),
 		.read_data (l1i_read_data)
 	);
@@ -38,9 +35,9 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 	Cache l1dcache (
 		.clk       (clk),
 		.rst       (rst),
-		.write_en  (l1d_write_en),
-		.write_data(l1d_write_data),
-		.address   (l1d_address),
+		.write_en  (write_en),
+		.write_data(write_data),
+		.address   (address),
 		.hit       (l1d_hit),
 		.read_data (l1d_read_data)
 	);
@@ -48,12 +45,15 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 
 ///////////////////////////////////// L2 CACHE /////////////////////////////////////
 
+	wire 						l2_hit;
+	wire 	[DATA_WIDTH-1:0]	l2_read_data;
+
 	Cache l2cache (
 		.clk       (clk),
 		.rst       (rst),
-		.write_en  (l2_write_en),
-		.write_data(l2_write_data),
-		.address   (l2_address),
+		.write_en  (write_en),
+		.write_data(write_data),
+		.address   (address),
 		.hit       (l2_hit),
 		.read_data (l2_read_data)
 	);
@@ -61,14 +61,19 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 
 ///////////////////////////////////// MAIN MEMORY /////////////////////////////////////
 
-	BRAM main_memory (
+	wire 						mm_read_en = 1;
+	wire 	[DATA_WIDTH-1:0]	mm_read_data;
+
+	BSRAM main_memory (
 		.clock       (clk),
-		.readEnable  (readEnable),
+		.reset       (rst),
+		.readEnable  (mm_read_en),
 		.readAddress (address),
 		.readData    (mm_read_data),
-		.writeEnable (mm_write_en),
+		.writeEnable (write_en),
 		.writeAddress(address),
-		.writeData   (mm_write_data)
+		.writeData   (write_data),
+		.report      (report)
 	);
 
 
