@@ -7,6 +7,10 @@ SRC 	:= $(wildcard ./*.v)
 
 all: $(TARGET)
 
+cache: ../testbeds/tb_CacheModel.v CacheModel.v Cache.v bsram.v
+	$(VC) -o $@ $^
+	./$@
+
 $(TARGET): $(SRC)
 	$(VC) -o $@ $^
 
