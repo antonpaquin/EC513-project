@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 // 
-//	GENERIC DIRECT-MAPPED CACHE MODEL WITH WRITEBACK & WRITEALLOCATE
+//	GENERIC DIRECT-MAPPED CACHE MODEL WITH WRITE-THROUGH AND NO-WRITE-ALLOCATE
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -17,7 +17,6 @@ module Cache #(
 	input 	[DATA_WIDTH-1:0]	write_data,
 	input 	[LOG_NUM_LINES:0] 	address,
 	output						hit,
-	output 						is_dirty,
 	output	[DATA_WIDTH-1:0]	read_data
 );
 
@@ -27,9 +26,6 @@ module Cache #(
 
 	// tags of all data in cache
 	reg [NUM_TAG_BITS-1:0] tags[0:2**LOG_NUM_LINES];
-
-	// dirty bits of all data in cache
-	reg dirty[0:NUM_LINES-1];
 
 	// valid bits of all data in cache
 	reg valid[0:NUM_LINES-1];
@@ -44,9 +40,6 @@ module Cache #(
 
 	// does this cache have the requested data
 	assign hit = valid[index] && tags[index]==tag;
-
-	// is this data dirty
-	assign is_dirty = dirty[index];
 
 	// asynchronous read 
 	// assign read_data = cachemem[index][NUM_BLOCKS-block_offset-1];

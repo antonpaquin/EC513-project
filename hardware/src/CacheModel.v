@@ -19,8 +19,7 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 
 ///////////////////////////////////// L1 CACHE /////////////////////////////////////
 	
-	reg 					l1i_hit, l1d_hit;
-	reg 					l1i_is_dirty, l1d_is_dirty;
+	wire 					l1i_hit, l1d_hit;
 	reg 					l1i_write_en, l1d_write_en;
 	reg	[ADDR_WIDTH-1:0]	l1i_address, l1d_address;
 	reg	[DATA_WIDTH-1:0]	l1i_write_data, l1d_write_data;
@@ -33,7 +32,6 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 		.write_data(l1i_write_data),
 		.address   (l1i_address),
 		.hit       (l1i_hit),
-		.is_dirty  (l1i_is_dirty),
 		.read_data (l1i_read_data)
 	);
 
@@ -44,7 +42,6 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 		.write_data(l1d_write_data),
 		.address   (l1d_address),
 		.hit       (l1d_hit),
-		.is_dirty  (l1d_is_dirty),
 		.read_data (l1d_read_data)
 	);
 
@@ -58,12 +55,11 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 		.write_data(l2_write_data),
 		.address   (l2_address),
 		.hit       (l2_hit),
-		.is_dirty  (l2_is_dirty),
 		.read_data (l2_read_data)
 	);
 
-	// TODO
-	wire readEnable = 1;
+
+///////////////////////////////////// MAIN MEMORY /////////////////////////////////////
 
 	BRAM main_memory (
 		.clock       (clk),
@@ -84,38 +80,12 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 					 : l2_hit	?	l2_read_data
 					 : mm_read_data;
 
-	always @(posedge clk) begin
-
-		if (~l1d_hit) begin
-			l1d_write_en <= 1;
-			l1d_write_data <= mm_read_data;
-		end // if (~l1d_hit)
-
-	end // always @(posedge clk)
 
 ///////////////////////////////////// WRITES /////////////////////////////////////
 
-	// always @(posedge clk) begin
-		
-	// 	if (~rst) begin
-
-	// 		if (write_en) begin
-
-	// 			// if dirty then need to transfer to main before overwriting
-	// 			if (l1d_is_dirty) begin
-	// 				mm_write_en <= 1;
-	// 				mm_write_data <= l1d_read_data;
-	// 			end
-
-	// 			// just write to l1 cache now, move to lower when dirty
-	// 			l1d_write_en <= 1;	
-
-	// 		end // if (write_en)
-
-	// 	end
-
-	// end // always @(posedge clk)
-
-
+	// write through all levels of memory
+	assign l1d_write_en = write_en;
+	assign l2_write_en = write_en;
+	assign mm_write_en = write_en;
 
 endmodule
