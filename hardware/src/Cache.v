@@ -16,11 +16,11 @@ module Cache #(
 	input 						write_en,
 	input 	[DATA_WIDTH-1:0]	write_data,
 	input 	[ADDR_WIDTH-1:0] 	address,
-	output						hit,
+	output	reg					hit,
 	output	[DATA_WIDTH-1:0]	read_data
 );
 
-	localparam NUM_TAG_BITS = DATA_WIDTH-LOG_NUM_LINES-LOG_NUM_BLOCKS;
+	localparam NUM_TAG_BITS = ADDR_WIDTH-LOG_NUM_LINES-LOG_NUM_BLOCKS;
 	localparam NUM_LINES = 2**LOG_NUM_LINES;
 	localparam NUM_BLOCKS = 2**LOG_NUM_BLOCKS;
 
@@ -38,9 +38,6 @@ module Cache #(
 	wire [LOG_NUM_BLOCKS-1:0] block_offset = address[LOG_NUM_BLOCKS-1:0];
 	wire [LOG_NUM_LINES-1:0] index = address[LOG_NUM_LINES+LOG_NUM_BLOCKS-1:LOG_NUM_BLOCKS];
 
-	// does this cache have the requested data
-	assign hit = valid[index] && tags[index]==tag;
-
 	// asynchronous read
 	assign read_data = cachemem[index][block_offset];
 
@@ -51,12 +48,20 @@ module Cache #(
 			valid <= 0;
 		end // if (rst)
 
-		else if (write_en) begin
+		else begin
 
-			cachemem[index][block_offset] = write_data;
-			valid[index] <= 1'b1;
+			// does this cache have the requested data
+			hit <= valid[index] && tags[index]==tag;
+
+			if (write_en) begin
+
+				cachemem[index][block_offset] <= write_data;
+				tags[index] <= tag;
+				valid[index] <= 1'b1;
+
+			end // if (write_en)
 		
-		end // if (write_en)
+		end // else
 
 	end // always @ (posedge clk)
 
