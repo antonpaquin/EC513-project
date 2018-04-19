@@ -17,6 +17,7 @@ module Cache #(
 	input 	[DATA_WIDTH-1:0]	write_data,
 	input 	[LOG_NUM_LINES:0] 	address,
 	output						hit,
+	output 						is_dirty,
 	output	[DATA_WIDTH-1:0]	read_data
 );
 
@@ -34,7 +35,7 @@ module Cache #(
 	reg valid[0:NUM_LINES-1];
 	
 	// each cache line is of size (data width) * (num blocks)
-	reg [DATA_WIDTH*NUM_BLOCKS-1:0] cachemem[0:NUM_LINES-1];
+	reg [DATA_WIDTH-1:0] cachemem[0:NUM_LINES-1][0:NUM_BLOCKS-1];
 
 	// index, tag, block offset bits in requested address
 	wire [NUM_TAG_BITS-1:0] tag = address[31:32-NUM_TAG_BITS];
@@ -42,16 +43,18 @@ module Cache #(
 	wire [LOG_NUM_LINES-1:0] index = address[LOG_NUM_LINES+LOG_NUM_BLOCKS-1:LOG_NUM_BLOCKS];
 
 	// does this cache have the requested data
-	assign hit = valid[index] && !dirty[index] && tags[index]==tag;
+	assign hit = valid[index] && tags[index]==tag;
+
+	// is this data dirty
+	assign is_dirty = dirty[index];
 
 	// asynchronous read 
-	assign read_data = hit ? cachemem[index][ DATA_WIDTH*(NUM_BLOCKS-block_offset) - 1 : DATA_WIDTH*(NUM_BLOCKS-block_offset) - DATA_WIDTH ]
-					 : 0;
+	// assign read_data = cachemem[index][NUM_BLOCKS-block_offset-1];
 
 	always @ (posedge clk) begin
 
 		if (write_en) begin
-			cachemem[index][ DATA_WIDTH*(NUM_BLOCKS-block_offset) - 1 : DATA_WIDTH*(NUM_BLOCKS-block_offset) - DATA_WIDTH ] = write_data;
+			cachemem[index][NUM_BLOCKS-block_offset-1] = write_data;
 		end // if (write_en)
 
 	end // always @ (posedge clk)
