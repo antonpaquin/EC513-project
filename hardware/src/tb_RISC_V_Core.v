@@ -44,11 +44,13 @@ initial begin
   reset  = 1;
   report = 0;
   prog_address = 'h0;         
-  repeat (2) @ (posedge clock);
+  //repeat (2) @ (posedge clock);
+  #4;
 
   reset = 0;
   start = 1; 
-  repeat (1) @ (posedge clock);
+  #2;
+  //repeat (1) @ (posedge clock);
 
   start = 0; 
   repeat (1) @ (posedge clock); 

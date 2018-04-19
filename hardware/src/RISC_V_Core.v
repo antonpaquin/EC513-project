@@ -87,7 +87,6 @@ wire regWrite;
 
 wire branch;
 wire [DATA_WIDTH-1:0]   ALU_result; 
-wire [ADDRESS_BITS-1:0] generated_addr = ALU_result; // the case the address is not 32-bit
 
 wire ALU_branch; 
 wire zero; // Have not done anything with this signal
@@ -99,10 +98,16 @@ reg  [1:0]   to_peripheral;
 reg  [31:0]  to_peripheral_data; 
 reg          to_peripheral_valid;
 
+wire pass_fd;
+wire pass_de;
+wire pass_em;
+wire pass_mw;
+
 fetch_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) IF (
         .clock(clock), 
         .reset(reset), 
         .start(start), 
+        .en(pass_mw),
         
         .PC_select(next_PC_sel),
         .program_address(prog_address), 
@@ -117,14 +122,33 @@ fetch_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) IF (
         .ready(i_ready),
         
         .report(report)
-); 
+);
+
+StallUnit stall (
+    .clk(clock),
+    .start(start),
+
+    .fd(pass_fd),
+    .de(pass_de),
+    .em(pass_em),
+    .mw(pass_mw)
+);
+
+wire [31:0] instruction_d;
+wire [ADDRESS_BITS-1:0] inst_PC_d;
+delay #(32 + ADDRESS_BITS) pipeline_d (
+    .clk(clock),
+    .en(pass_fd),
+    .in({instruction, inst_PC}),
+    .out({instruction_d, inst_PC_d})
+);
       
 decode_unit #(CORE, ADDRESS_BITS) ID (
         .clock(clock), 
         .reset(reset),  
         
-        .instruction(instruction), 
-        .PC(inst_PC),
+        .instruction(instruction_d), 
+        .PC(inst_PC_d),
         .extend_sel(extend_sel),
         .write(write), 
         .write_reg(write_reg), 
@@ -163,20 +187,49 @@ control_unit #(CORE) CU (
         .report(report)
 );
 
+
+wire [ADDRESS_BITS-1:0] inst_PC_e;
+wire [2:0] funct3_e;
+wire [6:0] funct7_e;
+wire [DATA_WIDTH-1:0] rs1_data_e;
+wire [DATA_WIDTH-1:0] rs2_data_e;
+wire [4:0] rd_e;
+wire [DATA_WIDTH-1:0] extend_imm_e;
+delay #(15 + ADDRESS_BITS + (3*DATA_WIDTH)) pipeline_e1 (
+    .clk(clock),
+    .en(pass_de),
+    .in({inst_PC_d, funct3, funct7, rs1_data, rs2_data, rd, extend_imm}),
+    .out({inst_PC_e, funct3_e, funct7_e, rs1_data_e, rs2_data_e, rd_e, extend_imm_e})
+);
+
+wire branch_op_e;
+wire memRead_e;
+wire [2:0] ALUOp_e;
+wire memWrite_e;
+wire [1:0] operand_A_sel_e;
+wire operand_B_sel_e;
+wire regWrite_e;
+delay #(10) pipeline_e2 (
+    .clk(clock),
+    .en(pass_de),
+    .in({branch_op, memRead, ALUOp, memWrite, operand_A_sel, operand_B_sel, regWrite}),
+    .out({branch_op_e, memRead_e, ALUOp_e, memWrite_e, operand_A_sel_e, operand_B_sel_e, regWrite_e})
+);
+
 execution_unit #(CORE, DATA_WIDTH, ADDRESS_BITS) EU (
         .clock(clock), 
         .reset(reset), 
         
-        .ALU_Operation(ALUOp), 
-        .funct3(funct3), 
-        .funct7(funct7),
-        .branch_op(branch_op),
-        .PC(inst_PC), 
-        .ALU_ASrc(operand_A_sel),
-        .ALU_BSrc(operand_B_sel),
-        .regRead_1(rs1_data), 
-        .regRead_2(rs2_data), 
-        .extend(extend_imm), 
+        .ALU_Operation(ALUOp_e), 
+        .funct3(funct3_e), 
+        .funct7(funct7_e),
+        .branch_op(branch_op_e),
+        .PC(inst_PC_e), 
+        .ALU_ASrc(operand_A_sel_e),
+        .ALU_BSrc(operand_B_sel_e),
+        .regRead_1(rs1_data_e), 
+        .regRead_2(rs2_data_e), 
+        .extend(extend_imm_e), 
         .ALU_result(ALU_result), 
         .zero(zero), 
         .branch(branch),
@@ -185,14 +238,29 @@ execution_unit #(CORE, DATA_WIDTH, ADDRESS_BITS) EU (
         .report(report)
 );
 
+wire [DATA_WIDTH-1:0] ALU_result_m;
+wire memRead_m;
+wire memWrite_m;
+wire [DATA_WIDTH-1:0] rs2_data_m;
+wire regWrite_m;
+wire [4:0] rd_m;
+delay #((2*DATA_WIDTH) + 8) pipeline_m (
+    .clk(clock),
+    .en(pass_em),
+    .in({ALU_result, memRead_e, memWrite_e, rs2_data_e, regWrite_e, rd_e}),
+    .out({ALU_result_m, memRead_m, memWrite_m, rs2_data_m, regWrite_m, rd_m})
+);
+
+wire [ADDRESS_BITS-1:0] generated_addr = ALU_result_m; // the case the address is not 32-bit
+
 memory_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) MU (
         .clock(clock), 
         .reset(reset), 
         
-        .load(memRead), 
-        .store(memWrite),
+        .load(memRead_m), 
+        .store(memWrite_m),
         .address(generated_addr), 
-        .store_data(rs2_data),
+        .store_data(rs2_data_m),
         .data_addr(memory_addr), 
         .load_data(memory_data),
         .valid(d_valid),
@@ -201,15 +269,27 @@ memory_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) MU (
         .report(report)
 ); 
 
+wire regWrite_w;
+wire memRead_w;
+wire [4:0] rd_w;
+wire [DATA_WIDTH-1:0] ALU_result_w;
+wire [DATA_WIDTH-1:0] memory_data_w;
+delay #((2*DATA_WIDTH) + 7) pipeline_w (
+    .clk(clock),
+    .en(pass_mw),
+    .in({regWrite_m, memRead_m, rd_m, ALU_result_m, memory_data}),
+    .out({regWrite_w, memRead_w, rd_w, ALU_result_w, memory_data_w})
+);
+
 writeback_unit #(CORE, DATA_WIDTH) WB (
         .clock(clock), 
         .reset(reset),   
         
-        .opWrite(regWrite),
-        .opSel(memRead), 
-        .opReg(rd), 
-        .ALU_Result(ALU_result), 
-        .memory_data(memory_data), 
+        .opWrite(regWrite_w),
+        .opSel(memRead_w), 
+        .opReg(rd_w), 
+        .ALU_Result(ALU_result_w), 
+        .memory_data(memory_data_w), 
         .write(write), 
         .write_reg(write_reg), 
         .write_data(write_data), 

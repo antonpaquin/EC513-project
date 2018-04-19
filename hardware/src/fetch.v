@@ -22,7 +22,7 @@
 
 module fetch_unit #(parameter CORE = 0, DATA_WIDTH = 32, INDEX_BITS = 6, 
                      OFFSET_BITS = 3, ADDRESS_BITS = 20)(
-        clock, reset, start,
+        clock, reset, start, en,
         
         PC_select,
         program_address, 
@@ -38,7 +38,7 @@ module fetch_unit #(parameter CORE = 0, DATA_WIDTH = 32, INDEX_BITS = 6,
         report
 ); 
 
-input clock, reset, start; 
+input clock, reset, start, en;
 input [1:0] PC_select;
 
 input [ADDRESS_BITS-1:0] program_address;
@@ -87,7 +87,8 @@ always @ (posedge clock) begin
         old_PC       <= 0; 
       end 
       else begin 
-        if (start) begin 
+        if (!en) begin
+        end else if (start) begin 
             fetch        <= 1;
             PC_reg       <= program_address;            
             old_PC       <= 0; 
