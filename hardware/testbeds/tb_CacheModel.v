@@ -52,11 +52,16 @@ module tb_CacheModel;
 		// next 2s - all miss (new addr, same cache location)
 		// next 2s - all hit (same addr)
 		#4 address = 8'h30;
-
+		#2 address = 8'h28;
 		// write through all
 		#10 write_en = 1;
 
-		#10;
+		#10 write_en = 0;
+
+		#10 rst = 1; 
+
+	    //everything should be reset in the case
+		#2
 		$finish;
 
 	end // initial
