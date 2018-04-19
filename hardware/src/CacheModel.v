@@ -23,7 +23,12 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 	wire 	[DATA_WIDTH-1:0]	l1i_write_data, l1d_write_data;
 	wire 	[DATA_WIDTH-1:0]	l1i_read_data, l1d_read_data;
 
-	Cache l1icache (
+	Cache #(
+		.LOG_NUM_LINES(2),
+		.LOG_NUM_BLOCKS(1),
+		.DATA_WIDTH(32),
+		.ADDR_WIDTH(8))
+		l1icache (
 		.clk       (clk),
 		.rst       (rst),
 		.write_en  (l1i_write_en),
@@ -33,7 +38,12 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 		.read_data (l1i_read_data)
 	);
 
-	Cache l1dcache (
+	Cache #(
+		.LOG_NUM_LINES(2),
+		.LOG_NUM_BLOCKS(1),
+		.DATA_WIDTH(32),
+		.ADDR_WIDTH(8))
+		l1dcache (
 		.clk       (clk),
 		.rst       (rst),
 		.write_en  (l1d_write_en),
@@ -50,7 +60,12 @@ module CacheModel #(parameter CORE = 0, DATA_WIDTH = 32, ADDR_WIDTH = 8)(
 	wire 	[DATA_WIDTH-1:0]	l2_write_data;
 	wire 	[DATA_WIDTH-1:0]	l2_read_data;
 
-	Cache l2cache (
+	Cache #(
+		.LOG_NUM_LINES(3),
+		.LOG_NUM_BLOCKS(1),
+		.DATA_WIDTH(32),
+		.ADDR_WIDTH(8))
+		l2cache (
 		.clk       (clk),
 		.rst       (rst),
 		.write_en  (l2_write_en),

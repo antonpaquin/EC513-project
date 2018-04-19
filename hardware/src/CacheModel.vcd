@@ -1,5 +1,5 @@
 $date
-	Thu Apr 19 13:31:56 2018
+	Thu Apr 19 14:09:54 2018
 $end
 $version
 	Icarus Verilog
@@ -65,10 +65,10 @@ $var wire 32 F read_data [31:0] $end
 $var wire 1 * rst $end
 $var wire 32 G write_data [31:0] $end
 $var wire 1 & write_en $end
-$var wire 5 H tag [4:0] $end
-$var wire 2 I index [1:0] $end
+$var wire 4 H tag [3:0] $end
+$var wire 3 I index [2:0] $end
 $var wire 1 J block_offset $end
-$var reg 4 K valid [3:0] $end
+$var reg 8 K valid [7:0] $end
 $upscope $end
 $scope module main_memory $end
 $var wire 1 " clock $end
@@ -102,21 +102,69 @@ $upscope $end
 $upscope $end
 $scope module tb_CacheModel $end
 $scope module uut $end
-$scope module l1dcache $end
-$var reg 5 S \tags[0] [4:0] $end
+$scope module l2cache $end
+$var reg 32 S \cachemem[0] [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l2cache $end
+$var reg 32 T \cachemem[1] [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l2cache $end
+$var reg 32 U \cachemem[8] [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l2cache $end
+$var reg 32 V \cachemem[9] [31:0] $end
 $upscope $end
 $upscope $end
 $upscope $end
 $scope module tb_CacheModel $end
 $scope module uut $end
 $scope module l1dcache $end
-$var reg 5 T \tags[1] [4:0] $end
+$var reg 5 W \tags[0] [4:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l1dcache $end
+$var reg 5 X \tags[1] [4:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l2cache $end
+$var reg 4 Y \tags[0] [3:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module tb_CacheModel $end
+$scope module uut $end
+$scope module l2cache $end
+$var reg 4 Z \tags[1] [3:0] $end
 $upscope $end
 $upscope $end
 $upscope $end
 $enddefinitions $end
 #0
 $dumpvars
+bx Z
+bx Y
+bx X
+bx W
+bx V
+bx U
 bx T
 bx S
 bx R
@@ -129,7 +177,7 @@ b100000 L
 b0 K
 0J
 b0 I
-b100 H
+b10 H
 b111010010011 G
 bx F
 b100000 E
@@ -206,11 +254,13 @@ b101010111100110111101111 G
 16
 11
 b1 =
-b100 S
+b100 W
 b111010010011 Q
 b111010010011 5
 b111010010011 8
 b1 K
+b10 Y
+b111010010011 S
 b111010010011 0
 b111010010011 F
 b10 P
@@ -219,21 +269,119 @@ b10 P
 0"
 #14
 b11 P
+1#
+1&
+b101010010011 4
+b101010010011 9
+b101010010011 /
+b101010010011 G
+b101010010011 -
+06
+01
+b11 :
+b11 A
+b1 H
+bx 0
+bx F
+b100 I
+b101010010011 .
+b101010010011 O
 1"
+b11000 !
+b11000 7
+b11000 >
+b11000 E
+b11000 L
+b11000 M
 #15
 0"
 #16
+0#
+0&
+b101010111100110111101111 4
+b101010111100110111101111 9
+b101010111100110111101111 /
+b101010111100110111101111 G
+16
+11
+b11 W
+b101010010011 Q
+b101010010011 5
+b101010010011 8
+b10001 K
+b101010010011 U
+b101010010011 0
+b101010010011 F
 b100 P
 1"
 #17
 0"
 #18
 b101 P
+1#
+1&
+b10011 4
+b10011 9
+b10011 /
+b10011 G
+b10011 -
+06
+01
+b110 :
+b110 A
+b11 H
+b111010010011 0
+b111010010011 F
+b0 I
+b10011 .
+b10011 O
 1"
+b110000 !
+b110000 7
+b110000 >
+b110000 E
+b110000 L
+b110000 M
 #19
 0"
 #20
+0#
+0&
+b101010111100110111101111 4
+b101010111100110111101111 9
+b101010111100110111101111 /
+b101010111100110111101111 G
+16
+11
+b110 W
+b10011 Q
+b10011 5
+b10011 8
+b11 Y
+b10011 S
+b10011 0
+b10011 F
 b110 P
+1"
+#21
+0"
+#22
+b111 P
+1"
+#23
+0"
+#24
+b1000 P
+1"
+#25
+0"
+#26
+b1001 P
+1"
+#27
+0"
+#28
+b1010 P
 b101010111100110111101111 .
 b101010111100110111101111 O
 1#
@@ -241,43 +389,53 @@ b101010111100110111101111 O
 1(
 1"
 1,
-#21
+#29
 0"
-#22
+#30
 b101010111100110111101111 -
-b111 P
+b1011 P
+b11 Y
+b101010111100110111101111 S
 b101010111100110111101111 0
 b101010111100110111101111 F
-b100 S
+b110 W
 b101010111100110111101111 Q
 b101010111100110111101111 5
 b101010111100110111101111 8
 1"
-#23
+#31
 0"
-#24
-b100 S
+#32
+b110 W
 b101010111100110111101111 Q
-b1000 P
+b11 Y
+b101010111100110111101111 S
+b1100 P
 1"
-#25
+#33
 0"
-#26
-b1001 P
-b100 S
+#34
+b1101 P
+b11 Y
+b101010111100110111101111 S
+b110 W
 b101010111100110111101111 Q
 1"
-#27
+#35
 0"
-#28
-b100 S
+#36
+b110 W
 b101010111100110111101111 Q
-b1010 P
+b11 Y
+b101010111100110111101111 S
+b1110 P
 1"
-#29
+#37
 0"
-#30
-b1011 P
-b100 S
+#38
+b1111 P
+b11 Y
+b101010111100110111101111 S
+b110 W
 b101010111100110111101111 Q
 1"
