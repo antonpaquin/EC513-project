@@ -37,10 +37,10 @@ module tb_CacheModel;
 		write_data = 32'habcdef;
 
 		#10 rst = 0;
+		
+		#4 write_en = 1;
 
-		write_en = 1;
-
-		#4;
+		#10;
 		$finish;
 
 	end // initial
