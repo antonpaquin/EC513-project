@@ -42,7 +42,7 @@ module Cache #(
 	wire [LOG_NUM_LINES-1:0] index = address[LOG_NUM_LINES+LOG_NUM_BLOCKS-1:LOG_NUM_BLOCKS];
 
 	// does this cache have the requested data
-	assign hit = cachemem[index][ DATA_WIDTH*(NUM_BLOCKS-block_offset) - 1 : DATA_WIDTH*(NUM_BLOCKS-block_offset) - DATA_WIDTH ];
+	assign hit = valid[index] && !dirty[index] && tags[index]==tag;
 
 	// asynchronous read 
 	assign read_data = hit ? cachemem[index][ DATA_WIDTH*(NUM_BLOCKS-block_offset) - 1 : DATA_WIDTH*(NUM_BLOCKS-block_offset) - DATA_WIDTH ]
