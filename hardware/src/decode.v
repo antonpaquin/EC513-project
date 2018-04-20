@@ -88,8 +88,8 @@ assign read_reg_b = rs2;
 wire [31:0] rs1_data_file;
 wire [31:0] rs2_data_file;
 
-assign rs1_data = (write_reg == read_reg_a) ? write_data : rs1_data_file;
-assign rs2_data = (write_reg == read_reg_b) ? write_data : rs2_data_file;
+assign rs1_data = (write && (write_reg == read_reg_a)) ? write_data : rs1_data_file;
+assign rs2_data = (write && (write_reg == read_reg_b)) ? write_data : rs2_data_file;
 
 
 /* Write register */

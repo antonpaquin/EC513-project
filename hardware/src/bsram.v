@@ -60,7 +60,7 @@ end
 
 always@(posedge clock) begin : RAM_WRITE
     if(writeEnable) begin
-        $display("Write %d => %d", writeData, writeAddress);
+        //$display("Write %d => %d", writeData, writeAddress);
         sram[writeAddress] <= writeData;
     end
 
