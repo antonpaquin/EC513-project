@@ -28,6 +28,11 @@ module execution_unit #(parameter CORE = 0, DATA_WIDTH = 32, ADDRESS_BITS = 20)(
         PC, ALU_ASrc, ALU_BSrc, 
         branch_op, 
         regRead_1, regRead_2, 
+        regSrc_1,
+        regSrc_2,
+        regRead_w,
+        regDest_w,
+        regEn_w,
         extend,
         ALU_result, zero, branch, 
         JALR_target,    
@@ -43,8 +48,13 @@ input [ADDRESS_BITS-1:0]  PC;
 input [1:0] ALU_ASrc; 
 input ALU_BSrc;
 input branch_op;
-input [DATA_WIDTH-1:0]  regRead_1 ;
-input [DATA_WIDTH-1:0]  regRead_2 ; 
+input [DATA_WIDTH-1:0]  regRead_1;
+input [4:0]  regSrc_1; 
+input [DATA_WIDTH-1:0]  regRead_2; 
+input [4:0]  regSrc_2; 
+input [DATA_WIDTH-1:0]  regRead_w; 
+input [4:0]  regDest_w; 
+input regEn_w;
 input [DATA_WIDTH-1:0]  extend;
 
 output zero, branch; 
@@ -52,6 +62,20 @@ output [DATA_WIDTH-1:0] ALU_result;
 output [ADDRESS_BITS-1:0] JALR_target;
 
 input report; 
+
+wire [DATA_WIDTH-1:0] reg1;
+wire [DATA_WIDTH-1:0] reg2;
+
+assign reg1 = (
+    (regSrc_1 == 0)        ? 0 :
+    (regDest_w == regSrc_1 && regEn_w) ? regRead_w :
+                              regRead_1
+);
+assign reg2 = (
+    (regSrc_2 == 0)        ? 0 :
+    (regDest_w == regSrc_2 && regEn_w) ? regRead_w :
+                              regRead_2
+);
  
 wire [5:0] ALU_Control = (ALU_Operation == 3'b011)? 
                          6'b011_111 :      //pass for JAL and JALR
@@ -78,8 +102,8 @@ wire [5:0] ALU_Control = (ALU_Operation == 3'b011)?
                          6'b000_000;      //addition
                          
 wire [DATA_WIDTH-1:0]  operand_A  =  (ALU_ASrc == 2'b01)? PC : 
-                                     (ALU_ASrc == 2'b10)? (PC + 4) : regRead_1;
-wire [DATA_WIDTH-1:0]  operand_B  =   ALU_BSrc? extend : regRead_2;
+                                     (ALU_ASrc == 2'b10)? (PC + 4) : reg1;
+wire [DATA_WIDTH-1:0]  operand_B  =   ALU_BSrc? extend : reg2;
 
 wire ALU_branch;
 assign branch  = (ALU_branch & branch_op)? 1 : 0; 
@@ -94,7 +118,7 @@ ALU #(DATA_WIDTH) EU (
 ); 
 
 /* Only JALR Target. JAL happens in the decode unit*/
-assign JALR_target        = {regRead_1 + extend} & 32'hffff_fffe; 
+assign JALR_target        = {reg1 + extend} & 32'hffff_fffe; 
 
 reg [31: 0] cycles; 
 always @ (posedge clock) begin 

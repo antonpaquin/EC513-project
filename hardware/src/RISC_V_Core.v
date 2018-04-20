@@ -98,18 +98,19 @@ reg  [1:0]   to_peripheral;
 reg  [31:0]  to_peripheral_data; 
 reg          to_peripheral_valid;
 
-wire pass_fd;
-wire pass_de;
-wire pass_em;
-wire pass_mw;
+wire stall;
 
+wire [4:0] read_reg_a;
+wire [4:0] read_reg_b;
+wire [1:0] next_PC_sel_f;
+wire fetch_stalled;
 fetch_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) IF (
         .clock(clock), 
         .reset(reset), 
         .start(start), 
-        .en(pass_mw),
+        .stall(stall),
         
-        .PC_select(next_PC_sel),
+        .PC_select(next_PC_sel_f),
         .program_address(prog_address), 
         .JAL_target(JAL_target),
         .JALR_target(JALR_target),
@@ -120,27 +121,33 @@ fetch_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) IF (
         .inst_PC(inst_PC),
         .valid(i_valid),
         .ready(i_ready),
+        .fetch_stalled(fetch_stalled),
         
         .report(report)
 );
 
-StallUnit stall (
+wire [31:0] instruction_d;
+StallUnit stall_unit (
     .clk(clock),
     .start(start),
 
-    .fd(pass_fd),
-    .de(pass_de),
-    .em(pass_em),
-    .mw(pass_mw)
+    .reg_src_a(instruction[24:20]),
+    .reg_src_b(instruction[19:15]),
+    .reg_dest(instruction[11:7]),
+
+    .mem_src(ALU_result),
+    .mem_dest(ALU_result),
+
+    .opcode(instruction[6:0]), 
+    .stall(stall)
 );
 
-wire [31:0] instruction_d;
 wire [ADDRESS_BITS-1:0] inst_PC_d;
-delay #(32 + ADDRESS_BITS) pipeline_d (
+wire fetch_stalled_d;
+delay #(33 + ADDRESS_BITS) pipeline_d (
     .clk(clock),
-    .en(pass_fd),
-    .in({instruction, inst_PC}),
-    .out({instruction_d, inst_PC_d})
+    .in({instruction, inst_PC, fetch_stalled}),
+    .out({instruction_d, inst_PC_d, fetch_stalled_d})
 );
       
 decode_unit #(CORE, ADDRESS_BITS) ID (
@@ -157,6 +164,8 @@ decode_unit #(CORE, ADDRESS_BITS) ID (
         .opcode(opcode), 
         .funct3(funct3), 
         .funct7(funct7),
+        .read_reg_a(read_reg_a),
+        .read_reg_b(read_reg_b),
         .rs1_data(rs1_data), 
         .rs2_data(rs2_data), 
         .rd(rd), 
@@ -170,7 +179,8 @@ decode_unit #(CORE, ADDRESS_BITS) ID (
 
 control_unit #(CORE) CU (
         .clock(clock), 
-        .reset(reset),   
+        .reset(reset),
+        .stall(fetch_stalled_d),
         
         .opcode(opcode),
         .branch_op(branch_op), 
@@ -187,6 +197,10 @@ control_unit #(CORE) CU (
         .report(report)
 );
 
+wire [1:0] next_PC_sel_1;
+delay #(2) pipeline_pcsel1 (next_PC_sel, next_PC_sel_1, clock);
+delay #(2) pipeline_pcsel2 (next_PC_sel_1, next_PC_sel_f, clock);
+
 
 wire [ADDRESS_BITS-1:0] inst_PC_e;
 wire [2:0] funct3_e;
@@ -194,12 +208,13 @@ wire [6:0] funct7_e;
 wire [DATA_WIDTH-1:0] rs1_data_e;
 wire [DATA_WIDTH-1:0] rs2_data_e;
 wire [4:0] rd_e;
+wire [4:0] regSrc_1_e;
+wire [4:0] regSrc_2_e;
 wire [DATA_WIDTH-1:0] extend_imm_e;
-delay #(15 + ADDRESS_BITS + (3*DATA_WIDTH)) pipeline_e1 (
+delay #(25 + ADDRESS_BITS + (3*DATA_WIDTH)) pipeline_e1 (
     .clk(clock),
-    .en(pass_de),
-    .in({inst_PC_d, funct3, funct7, rs1_data, rs2_data, rd, extend_imm}),
-    .out({inst_PC_e, funct3_e, funct7_e, rs1_data_e, rs2_data_e, rd_e, extend_imm_e})
+    .in({inst_PC_d, funct3, funct7, rs1_data, rs2_data, rd, extend_imm, read_reg_a, read_reg_b}),
+    .out({inst_PC_e, funct3_e, funct7_e, rs1_data_e, rs2_data_e, rd_e, extend_imm_e, regSrc_1_e, regSrc_2_e})
 );
 
 wire branch_op_e;
@@ -211,7 +226,6 @@ wire operand_B_sel_e;
 wire regWrite_e;
 delay #(10) pipeline_e2 (
     .clk(clock),
-    .en(pass_de),
     .in({branch_op, memRead, ALUOp, memWrite, operand_A_sel, operand_B_sel, regWrite}),
     .out({branch_op_e, memRead_e, ALUOp_e, memWrite_e, operand_A_sel_e, operand_B_sel_e, regWrite_e})
 );
@@ -228,7 +242,12 @@ execution_unit #(CORE, DATA_WIDTH, ADDRESS_BITS) EU (
         .ALU_ASrc(operand_A_sel_e),
         .ALU_BSrc(operand_B_sel_e),
         .regRead_1(rs1_data_e), 
+        .regSrc_1(regSrc_1_e),
         .regRead_2(rs2_data_e), 
+        .regSrc_2(regSrc_2_e),
+        .regRead_w(write_data),
+        .regDest_w(write_reg),
+        .regEn_w(write),
         .extend(extend_imm_e), 
         .ALU_result(ALU_result), 
         .zero(zero), 
@@ -238,20 +257,21 @@ execution_unit #(CORE, DATA_WIDTH, ADDRESS_BITS) EU (
         .report(report)
 );
 
-wire [DATA_WIDTH-1:0] ALU_result_m;
 wire memRead_m;
 wire memWrite_m;
+wire [ADDRESS_BITS-1:0] generated_addr;
+wire [DATA_WIDTH-1:0] ALU_result_m;
 wire [DATA_WIDTH-1:0] rs2_data_m;
 wire regWrite_m;
 wire [4:0] rd_m;
-delay #((2*DATA_WIDTH) + 8) pipeline_m (
+wire [4:0] regSrc_2_m;
+delay #((2*DATA_WIDTH) + 13) pipeline_m (
     .clk(clock),
-    .en(pass_em),
-    .in({ALU_result, memRead_e, memWrite_e, rs2_data_e, regWrite_e, rd_e}),
-    .out({ALU_result_m, memRead_m, memWrite_m, rs2_data_m, regWrite_m, rd_m})
+    .in({ALU_result, memRead_e, memWrite_e, rs2_data_e, regWrite_e, rd_e, regSrc_2_e}),
+    .out({ALU_result_m, memRead_m, memWrite_m, rs2_data_m, regWrite_m, rd_m, regSrc_2_m})
 );
 
-wire [ADDRESS_BITS-1:0] generated_addr = ALU_result_m; // the case the address is not 32-bit
+assign generated_addr = ALU_result_m; // the case the address is not 32-bit
 
 memory_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) MU (
         .clock(clock), 
@@ -260,6 +280,10 @@ memory_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) MU (
         .load(memRead_m), 
         .store(memWrite_m),
         .address(generated_addr), 
+        .rs2_src(regSrc_2_m),
+        .rs2_forward(write_data),
+        .reg_dest_w(write_reg),
+        .reg_en_w(write),
         .store_data(rs2_data_m),
         .data_addr(memory_addr), 
         .load_data(memory_data),
@@ -276,7 +300,6 @@ wire [DATA_WIDTH-1:0] ALU_result_w;
 wire [DATA_WIDTH-1:0] memory_data_w;
 delay #((2*DATA_WIDTH) + 7) pipeline_w (
     .clk(clock),
-    .en(pass_mw),
     .in({regWrite_m, memRead_m, rd_m, ALU_result_m, memory_data}),
     .out({regWrite_w, memRead_w, rd_w, ALU_result_w, memory_data_w})
 );
@@ -304,7 +327,7 @@ always @ (posedge clock) begin
               to_peripheral_data  <= write_data; 
               to_peripheral_valid <= 1;
               $display (" Core [%d] Register [%d] Value = %d", CORE, write_reg, write_data);
-         end
+        end
          else to_peripheral_valid <= 0;  
 end
     

@@ -28,6 +28,7 @@
 
 module control_unit #(parameter CORE = 0)(
     clock, reset,
+    stall,
     opcode,
     branch_op, memRead, 
     memtoReg, ALUOp, 
@@ -40,6 +41,7 @@ module control_unit #(parameter CORE = 0)(
 
     input clock;
     input reset;
+    input stall;
     input [6:0] opcode;
         
     output branch_op;
@@ -66,37 +68,98 @@ module control_unit #(parameter CORE = 0)(
                     FENCES  = 7'b0001111,
                     SYSCALL = 7'b1110011;
 
-    assign regWrite      = ((opcode == R_TYPE) | (opcode == I_TYPE) | (opcode == LOAD)
-                            | (opcode == JALR) | (opcode == JAL) | (opcode == AUIPC) 
-                            | (opcode == LUI))? 1 : 0; 
-    assign memWrite      = (opcode == STORE)?   1 : 0; 
-    assign branch_op     = (opcode == BRANCH)?  1 : 0; 
-    assign memRead       = (opcode == LOAD)?    1 : 0; 
-    assign memtoReg      = (opcode == LOAD)?    1 : 0; 
+    assign regWrite = (
+        stall ? 0 :
+        (
+            (opcode == R_TYPE) |
+            (opcode == I_TYPE) |
+            (opcode == LOAD)   |
+            (opcode == JALR)   |
+            (opcode == JAL)    |
+            (opcode == AUIPC)  |
+            (opcode == LUI)
+        ) ? 1 :
+        0
+    ); 
+    assign memWrite = (
+        stall ? 0 : 
+        (opcode == STORE) ? 1 :
+        0
+    ); 
+    assign branch_op = (
+        stall ? 0 :
+        (opcode == BRANCH) ? 1 : 
+        0
+    ); 
+    assign memRead = (
+        stall ? 0 :
+        (opcode == LOAD) ? 1 :
+        0
+    ); 
+    assign memtoReg = (
+        stall ? 0 :
+        (opcode == LOAD) ? 1 :
+        0
+    ); 
 
-    assign ALUOp         = (opcode == R_TYPE)?  3'b000 : 
-                           (opcode == I_TYPE)?  3'b001 :
-                           (opcode == STORE)?   3'b101 :   
-                           (opcode == LOAD)?    3'b100 : 
-                           (opcode == BRANCH)?  3'b010 : 
-                           ((opcode == JALR)  | (opcode == JAL))? 3'b011 :
-                           ((opcode == AUIPC) | (opcode == LUI))? 3'b110 : 0; 
+    assign ALUOp = (
+        stall                                 ?  3'b000 :
+        (opcode == R_TYPE)                    ?  3'b000 : 
+        (opcode == I_TYPE)                    ?  3'b001 :
+        (opcode == STORE)                     ?  3'b101 :   
+        (opcode == LOAD)                      ?  3'b100 : 
+        (opcode == BRANCH)                    ?  3'b010 : 
+        ((opcode == JALR)  | (opcode == JAL)) ?  3'b011 :
+        ((opcode == AUIPC) | (opcode == LUI)) ?  3'b110 :
+        0
+    ); 
     
-    assign operand_A_sel = (opcode == AUIPC)?  2'b01 : 
-                           (opcode == LUI)?    2'b11 : 
-                           ((opcode == JALR)  | (opcode == JAL))?  2'b10 : 0; 
+    assign operand_A_sel = (
+        stall             ? 2'b00 :
+        (opcode == AUIPC) ? 2'b01 : 
+        (opcode == LUI)   ? 2'b11 : 
+        (
+            (opcode == JALR) |
+            (opcode == JAL)
+        )                 ? 2'b10 :
+        0
+    ); 
                            
-    assign operand_B_sel = ((opcode == I_TYPE) | (opcode == STORE)| 
-                           (opcode == LOAD) | (opcode == AUIPC) | 
-                           (opcode == LUI))? 1 : 0; 
+    assign operand_B_sel = (
+        //stall ? 0 :
+        (
+            (opcode == I_TYPE) |
+            (opcode == STORE)  | 
+            (opcode == LOAD)   |
+            (opcode == AUIPC)  | 
+            (opcode == LUI)
+        ) ? 1 :
+        0
+    ); 
 
-    assign extend_sel    = ((opcode == I_TYPE)  | (opcode == LOAD))?  2'b00 : 
-                           (opcode == STORE)?   2'b01  : 
-                           ((opcode == AUIPC) | (opcode == LUI))? 2'b10 : 0;
+    assign extend_sel = (
+        stall                    ? 2'b00 :
+        (
+            (opcode == I_TYPE) |
+            (opcode == LOAD)
+        )                        ? 2'b00 : 
+        (opcode == STORE)        ? 2'b01 :
+        (
+            (opcode == AUIPC) |
+            (opcode == LUI)
+        )                        ? 2'b10 :
+        0
+    );
 
-    assign next_PC_sel   = (opcode == BRANCH)?  2'b01 : 
-                           (opcode == JAL)?     2'b10 : 
-                           (opcode == JALR)?    2'b11 : 0; 
+    assign next_PC_sel = (
+        stall ? 2'b00 :
+        (
+            opcode == BRANCH
+        ) ? 2'b01 : 
+        (opcode == JAL)  ? 2'b10 :
+        (opcode == JALR) ? 2'b11 :
+        0
+    ); 
     
 reg [31: 0] cycles; 
 always @ (posedge clock) begin 

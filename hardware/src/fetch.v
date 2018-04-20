@@ -22,7 +22,7 @@
 
 module fetch_unit #(parameter CORE = 0, DATA_WIDTH = 32, INDEX_BITS = 6, 
                      OFFSET_BITS = 3, ADDRESS_BITS = 20)(
-        clock, reset, start, en,
+        clock, reset, start, stall,
         
         PC_select,
         program_address, 
@@ -35,10 +35,11 @@ module fetch_unit #(parameter CORE = 0, DATA_WIDTH = 32, INDEX_BITS = 6,
         inst_PC,
         valid, 
         ready, 
+        fetch_stalled,
         report
 ); 
 
-input clock, reset, start, en;
+input clock, reset, start, stall;
 input [1:0] PC_select;
 
 input [ADDRESS_BITS-1:0] program_address;
@@ -52,12 +53,17 @@ output [DATA_WIDTH-1:0]   instruction;
 output [ADDRESS_BITS-1:0] inst_PC;  
 output valid; 
 output ready; 
+output reg fetch_stalled;
 
 reg [ADDRESS_BITS-1:0] old_PC;
 reg fetch; 
 
 reg  [ADDRESS_BITS-1:0] PC_reg; 
-wire [ADDRESS_BITS-1:0] PC = reset? program_address : PC_reg;
+wire [ADDRESS_BITS-1:0] PC = (
+    reset ? program_address : 
+    fetch_stalled ? PC :
+    PC_reg
+);
 wire [ADDRESS_BITS-1:0] PC_plus4 = PC + 4;
 
 //Adjustment to be word addressable instruction addresses 
@@ -87,8 +93,7 @@ always @ (posedge clock) begin
         old_PC       <= 0; 
       end 
       else begin 
-        if (!en) begin
-        end else if (start) begin 
+        if (start) begin 
             fetch        <= 1;
             PC_reg       <= program_address;            
             old_PC       <= 0; 
@@ -101,6 +106,7 @@ always @ (posedge clock) begin
             old_PC       <= PC_reg; 
         end
       end
+      fetch_stalled <= stall;
 end
 
 reg [31: 0] cycles; 

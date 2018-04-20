@@ -24,6 +24,10 @@ module memory_unit #(parameter CORE = 0, DATA_WIDTH = 32, INDEX_BITS = 6,
                      OFFSET_BITS = 3, ADDRESS_BITS = 20)(
         clock, reset, 
         load, store,
+        rs2_src,
+        rs2_forward,
+        reg_dest_w,
+        reg_en_w,
         address, 
         store_data,
         data_addr, 
@@ -38,11 +42,21 @@ input load, store;
 input [ADDRESS_BITS-1:0] address;
 input [DATA_WIDTH-1:0]   store_data;
 input report;
+input [DATA_WIDTH-1:0] rs2_forward;
+input [4:0] rs2_src;
+input [4:0] reg_dest_w;
+input reg_en_w;
 
 output [ADDRESS_BITS-1:0] data_addr;
 output [DATA_WIDTH-1:0]   load_data;
 output valid; 
 output ready;  
+
+wire [DATA_WIDTH-1:0] store_data_forward;
+assign store_data_forward = (
+    (rs2_src == reg_dest_w) ? rs2_forward :
+    store_data
+);
 
 mem_interface #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS)  
                     d_mem_interface (
@@ -51,7 +65,7 @@ mem_interface #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS)
                      .read(load), 
                      .write(store), 
                      .address(address), 
-                     .in_data(store_data), 
+                     .in_data(store_data_forward), 
                      .out_addr(data_addr),
                      .out_data(load_data), 
                      .valid(valid), 

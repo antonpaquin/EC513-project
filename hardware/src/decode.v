@@ -23,11 +23,14 @@
 module decode_unit #(parameter CORE = 0, ADDRESS_BITS = 20)(
       clock, reset, 
       PC, instruction, 
+      stall,
       extend_sel,
       write, write_reg, write_data, 
       
       opcode, funct3, funct7,
       rs1_data, rs2_data, rd, 
+      read_reg_a,
+      read_reg_b,
       extend_imm,
       branch_target, 
       JAL_target,  
@@ -36,6 +39,7 @@ module decode_unit #(parameter CORE = 0, ADDRESS_BITS = 20)(
  
 input  clock; 
 input  reset; 
+input  stall;
 
 input  [ADDRESS_BITS-1:0] PC;
 input  [31:0] instruction; 
@@ -53,12 +57,14 @@ output [2:0]  funct3;
 output [31:0] extend_imm;
 output [ADDRESS_BITS-1:0] branch_target; 
 output [ADDRESS_BITS-1:0] JAL_target;
+output [4:0] read_reg_a;
+output [4:0] read_reg_b;
 
 input report; 
 
 // Read registers
-wire[4:0]  rs2        = instruction[24:20];
-wire[4:0]  rs1        = instruction[19:15];
+wire [4:0]  rs2 = instruction[24:20];
+wire [4:0]  rs1 = instruction[19:15];
 
 wire[11:0] i_imm      = instruction[31:20];
 wire[6:0]  s_imm_msb  = instruction[31:25];
@@ -75,6 +81,9 @@ wire[12:0] sb_imm_orig    = {s_imm_msb[6],s_imm_lsb[0],s_imm_msb[5:0],s_imm_lsb[
 assign opcode        = instruction[6:0];
 assign funct7        = instruction[31:25];
 assign funct3        = instruction[14:12];
+
+assign read_reg_a = rs1;
+assign read_reg_b = rs2;
 
 /* Write register */
 assign  rd           = instruction[11:7];

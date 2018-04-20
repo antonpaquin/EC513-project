@@ -59,8 +59,15 @@ initial begin
 end
 
 always@(posedge clock) begin : RAM_WRITE
-    if(writeEnable)
+    if(writeEnable) begin
+        $display("Write %d => %d", writeData, writeAddress);
         sram[writeAddress] <= writeData;
+    end
+
+    if (readEnable) begin
+        if (readAddress != {ADDR_WIDTH{1'bx}})
+            $display("Read %d", readAddress);
+    end
 end
 
 reg [31: 0] cycles; 
