@@ -85,6 +85,13 @@ assign funct3        = instruction[14:12];
 assign read_reg_a = rs1;
 assign read_reg_b = rs2;
 
+wire [31:0] rs1_data_file;
+wire [31:0] rs2_data_file;
+
+assign rs1_data = (write_reg == read_reg_a) ? write_data : rs1_data_file;
+assign rs2_data = (write_reg == read_reg_b) ? write_data : rs2_data_file;
+
+
 /* Write register */
 assign  rd           = instruction[11:7];
 
@@ -112,8 +119,8 @@ regFile #(32, 5) registers (
                 .wEn(write), 
                 .write_sel(write_reg), 
                 .write_data(write_data), 
-                .read_data1(rs1_data), 
-                .read_data2(rs2_data)
+                .read_data1(rs1_data_file), 
+                .read_data2(rs2_data_file)
 );
 
 reg [31: 0] cycles; 

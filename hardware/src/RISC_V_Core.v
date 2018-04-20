@@ -104,6 +104,8 @@ wire [4:0] read_reg_a;
 wire [4:0] read_reg_b;
 wire [1:0] next_PC_sel_f;
 wire fetch_stalled;
+wire [ADDRESS_BITS-1:0] JALR_target_f;
+wire branch_f;
 fetch_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) IF (
         .clock(clock), 
         .reset(reset), 
@@ -113,8 +115,8 @@ fetch_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) IF (
         .PC_select(next_PC_sel_f),
         .program_address(prog_address), 
         .JAL_target(JAL_target),
-        .JALR_target(JALR_target),
-        .branch(branch), 
+        .JALR_target(JALR_target_f),
+        .branch(branch_f), 
         .branch_target(branch_target), 
         
         .instruction(instruction), 
@@ -125,6 +127,9 @@ fetch_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) IF (
         
         .report(report)
 );
+
+delay #(ADDRESS_BITS) pipeline_jalr_target (JALR_target, JALR_target_f, clock);
+delay #(1) pipeline_branch (branch, branch_f, clock);
 
 wire [31:0] instruction_d;
 StallUnit stall_unit (
@@ -201,7 +206,6 @@ wire [1:0] next_PC_sel_1;
 delay #(2) pipeline_pcsel1 (next_PC_sel, next_PC_sel_1, clock);
 delay #(2) pipeline_pcsel2 (next_PC_sel_1, next_PC_sel_f, clock);
 
-
 wire [ADDRESS_BITS-1:0] inst_PC_e;
 wire [2:0] funct3_e;
 wire [6:0] funct7_e;
@@ -230,6 +234,9 @@ delay #(10) pipeline_e2 (
     .out({branch_op_e, memRead_e, ALUOp_e, memWrite_e, operand_A_sel_e, operand_B_sel_e, regWrite_e})
 );
 
+wire [4:0] rd_m;
+wire [DATA_WIDTH-1:0] ALU_result_m;
+wire regWrite_m;
 execution_unit #(CORE, DATA_WIDTH, ADDRESS_BITS) EU (
         .clock(clock), 
         .reset(reset), 
@@ -245,9 +252,15 @@ execution_unit #(CORE, DATA_WIDTH, ADDRESS_BITS) EU (
         .regSrc_1(regSrc_1_e),
         .regRead_2(rs2_data_e), 
         .regSrc_2(regSrc_2_e),
+
         .regRead_w(write_data),
         .regDest_w(write_reg),
         .regEn_w(write),
+
+        .regRead_m(ALU_result_m),
+        .regDest_m(rd_m),
+        .regEn_m(regWrite_m),
+
         .extend(extend_imm_e), 
         .ALU_result(ALU_result), 
         .zero(zero), 
@@ -260,10 +273,7 @@ execution_unit #(CORE, DATA_WIDTH, ADDRESS_BITS) EU (
 wire memRead_m;
 wire memWrite_m;
 wire [ADDRESS_BITS-1:0] generated_addr;
-wire [DATA_WIDTH-1:0] ALU_result_m;
 wire [DATA_WIDTH-1:0] rs2_data_m;
-wire regWrite_m;
-wire [4:0] rd_m;
 wire [4:0] regSrc_2_m;
 delay #((2*DATA_WIDTH) + 13) pipeline_m (
     .clk(clock),

@@ -33,6 +33,9 @@ module execution_unit #(parameter CORE = 0, DATA_WIDTH = 32, ADDRESS_BITS = 20)(
         regRead_w,
         regDest_w,
         regEn_w,
+        regRead_m,
+        regDest_m,
+        regEn_m,
         extend,
         ALU_result, zero, branch, 
         JALR_target,    
@@ -48,13 +51,21 @@ input [ADDRESS_BITS-1:0]  PC;
 input [1:0] ALU_ASrc; 
 input ALU_BSrc;
 input branch_op;
+
 input [DATA_WIDTH-1:0]  regRead_1;
 input [4:0]  regSrc_1; 
+
 input [DATA_WIDTH-1:0]  regRead_2; 
 input [4:0]  regSrc_2; 
+
 input [DATA_WIDTH-1:0]  regRead_w; 
 input [4:0]  regDest_w; 
 input regEn_w;
+
+input [DATA_WIDTH-1:0]  regRead_m; 
+input [4:0]  regDest_m; 
+input regEn_m;
+
 input [DATA_WIDTH-1:0]  extend;
 
 output zero, branch; 
@@ -69,6 +80,7 @@ wire [DATA_WIDTH-1:0] reg2;
 assign reg1 = (
     (regSrc_1 == 0)        ? 0 :
     (regDest_w == regSrc_1 && regEn_w) ? regRead_w :
+    (regDest_m == regSrc_1 && regEn_m) ? regRead_m :
                               regRead_1
 );
 assign reg2 = (
