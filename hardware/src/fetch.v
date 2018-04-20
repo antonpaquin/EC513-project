@@ -25,6 +25,7 @@ module fetch_unit #(parameter CORE = 0, DATA_WIDTH = 32, INDEX_BITS = 6,
         clock, reset, start, stall,
         
         PC_select,
+        PC_select_jal,
         program_address, 
         JAL_target,
         JALR_target,
@@ -41,6 +42,7 @@ module fetch_unit #(parameter CORE = 0, DATA_WIDTH = 32, INDEX_BITS = 6,
 
 input clock, reset, start, stall;
 input [1:0] PC_select;
+input [1:0] PC_select_jal;
 
 input [ADDRESS_BITS-1:0] program_address;
 input [ADDRESS_BITS-1:0] JAL_target;
@@ -100,7 +102,7 @@ always @ (posedge clock) begin
         end 
         else begin 
             fetch        <= 1;
-            PC_reg       <= (PC_select == 2'b10)?  JAL_target: 
+            PC_reg       <= (PC_select_jal == 2'b10)?  JAL_target: 
                             (PC_select == 2'b11)?  JALR_target: 
                             ((PC_select == 2'b01)& branch)?  branch_target : PC_plus4;  
             old_PC       <= PC_reg; 
@@ -108,6 +110,18 @@ always @ (posedge clock) begin
       end
       fetch_stalled <= stall;
 end
+
+reg [31:0] instruction_count;
+always @(posedge clock) begin
+    if (reset) begin
+        instruction_count <= 0;
+    end else if (fetch_stalled) begin
+    end else begin
+        instruction_count <= instruction_count + 1;
+    end
+end
+
+
 
 reg [31: 0] cycles; 
 always @ (posedge clock) begin 

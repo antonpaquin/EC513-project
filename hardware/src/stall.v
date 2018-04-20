@@ -63,6 +63,7 @@ module StallUnit (
             mem_src == mem_queue[0]
         )
     );
+
     assign branch_dep = (
         branch_queue[3] |
         branch_queue[2] |
@@ -82,6 +83,7 @@ module StallUnit (
             mem_queue[2] <= mem_dest;
             branch_queue[2] <= branch;
         end
+
         //reg_queue[2] <= reg_queue[3];
         reg_queue[1] <= reg_queue[2];
         reg_queue[0] <= reg_queue[1];
@@ -111,4 +113,5 @@ module StallUnit (
         branch_queue[1] <= 0;
         branch_queue[0] <= 0;
     end
+
 endmodule

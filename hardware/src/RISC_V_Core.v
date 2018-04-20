@@ -103,6 +103,7 @@ wire stall;
 wire [4:0] read_reg_a;
 wire [4:0] read_reg_b;
 wire [1:0] next_PC_sel_f;
+wire [1:0] next_PC_sel_1;
 wire fetch_stalled;
 wire [ADDRESS_BITS-1:0] JALR_target_f;
 wire branch_f;
@@ -113,6 +114,7 @@ fetch_unit #(CORE, DATA_WIDTH, INDEX_BITS, OFFSET_BITS, ADDRESS_BITS) IF (
         .stall(stall),
         
         .PC_select(next_PC_sel_f),
+        .PC_select_jal(next_PC_sel_1),
         .program_address(prog_address), 
         .JAL_target(JAL_target),
         .JALR_target(JALR_target_f),
@@ -202,7 +204,6 @@ control_unit #(CORE) CU (
         .report(report)
 );
 
-wire [1:0] next_PC_sel_1;
 delay #(2) pipeline_pcsel1 (next_PC_sel, next_PC_sel_1, clock);
 delay #(2) pipeline_pcsel2 (next_PC_sel_1, next_PC_sel_f, clock);
 
